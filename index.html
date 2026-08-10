@@ -4,146 +4,85 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cabinet of Emergence</title>
-<style>
-  :root{
-    --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
-    --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
-    --amber:#e8b85c; --amber-dim:#8a6a38;
-    --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
-    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
-    --font-mono:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:60px 20px 100px;}
-  .page{max-width:760px;margin:0 auto;}
-  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--amber);margin:0 0 14px;}
-  h1{font-family:var(--font-serif);font-weight:400;font-size:42px;margin:0 0 18px;line-height:1.15;}
-  .lede{font-size:14px;line-height:1.8;color:var(--text-muted);max-width:600px;margin:0 0 60px;}
-  .lede b{color:var(--text);font-weight:600;}
-  .specimen{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:6px;
-    padding:28px 30px;
-    margin-bottom:22px;
-  }
-  .spec-num{font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin:0 0 6px;}
-  .spec-title{font-family:var(--font-serif);font-size:24px;margin:0 0 10px;color:var(--text);}
-  .spec-rule{font-size:13px;line-height:1.7;color:var(--text-muted);margin:0 0 16px;}
-  .finding{
-    font-family:var(--font-serif);
-    font-style:italic;
-    font-size:14.5px;
-    line-height:1.75;
-    color:var(--text);
-    border-left:2px solid var(--amber-dim);
-    padding-left:16px;
-    margin:0 0 20px;
-  }
-  .spec-link{
-    display:inline-block;
-    font-family:var(--font-mono);
-    font-size:11px;
-    letter-spacing:0.05em;
-    text-transform:uppercase;
-    color:var(--amber);
-    text-decoration:none;
-    border:1px solid var(--amber-dim);
-    padding:9px 14px;
-    border-radius:3px;
-  }
-  .spec-link:hover{background:rgba(232,184,92,0.08);}
-  footer{
-    margin-top:50px;
-    font-size:11.5px;
-    color:var(--text-faint);
-    line-height:1.8;
-    border-top:1px solid var(--border);
-    padding-top:24px;
-  }
-</style>
 </head>
-<body>
-<div class="page">
-  <p class="eyebrow">A collaborative project</p>
-  <h1>Cabinet of Emergence</h1>
-  <p class="lede">
-    Five small simulations. Nothing in any of them is designed to be intelligent — a handful of local rules,
-    applied over and over, with no cell, boid, agent, or ant aware of the whole picture. <b>Every specimen here
-    includes at least one prediction that turned out wrong</b> before it turned out right — the wrong guess is
-    left in, because it's usually more interesting than the answer.
-  </p>
+<body style="margin:0;background:#12131a;color:#dcd9cd;font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;padding:88px 24px 110px;min-height:100vh;">
+  <div style="max-width:800px;margin:0 auto;">
 
-  <div class="specimen">
-    <p class="spec-num">Specimen 01</p>
-    <h2 class="spec-title">Conway's Game of Life</h2>
-    <p class="spec-rule">A grid of cells, each alive or dead. Two or three living neighbors keep a cell alive;
-      exactly three bring a dead one to life. Everything else dies.</p>
-    <p class="finding">At 35% starting density, boards never die out — they settle, almost always into a simple
-      repeating pulse, never anything more exotic. How long that takes varies tenfold. Where it ends up barely
-      varies at all.</p>
-    <a class="spec-link" href="specimen-01-game-of-life.html">Watch it run →</a>
+    <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#eab766;margin:0 0 20px;">A collaborative project</p>
+
+    <h1 style="font-weight:400;font-size:56px;margin:0 0 26px;line-height:1.1;letter-spacing:-0.01em;">Cabinet of Emergence</h1>
+
+    <p style="font-size:19px;line-height:1.75;color:#b7b3a4;max-width:660px;margin:0 0 36px;">
+      An open-ended set of simulations, with more added over time. Nothing in any of them is designed to be intelligent — a handful of local rules,
+      applied over and over, with no cell, boid, agent, or ant aware of the whole picture. <b style="color:#e9e6da;font-weight:600;">Every specimen here
+      includes at least one prediction that turned out wrong</b> before it turned out right — the wrong guess is
+      left in, because it's usually more interesting than the answer.
+    </p>
+
+    <div style="display:flex;gap:0;align-items:stretch;border:1px solid #34364a;border-radius:8px;overflow:hidden;margin:0 0 64px;background:#171923;">
+      <div style="flex:1;padding:22px 26px;border-right:1px solid #34364a;">
+        <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;color:#eab766;margin:0 0 8px;">Claude</p>
+        <p style="font-size:15px;line-height:1.6;color:#9a97a8;margin:0;">Designs each simulation's rules and writes down a prediction before running it.</p>
+      </div>
+      <div style="flex:1;padding:22px 26px;">
+        <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;color:#eab766;margin:0 0 8px;">Sinndor</p>
+        <p style="font-size:15px;line-height:1.6;color:#9a97a8;margin:0;">Runs it, watches what actually happens, and reports the result back — wrong guesses included.</p>
+      </div>
+    </div>
+
+    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
+      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 01</p>
+      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Conway's Game of Life</h2>
+      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">A grid of cells, each alive or dead. Two or three living neighbors keep a cell alive; exactly three bring a dead one to life. Everything else dies.</p>
+      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">At 35% starting density, boards never die out — they settle, almost always into a simple repeating pulse, never anything more exotic. How long that takes varies tenfold. Where it ends up barely varies at all.</p>
+      <a href="specimen-01-game-of-life.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
+    </div>
+
+    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
+      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 02</p>
+      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Boids</h2>
+      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">Eighty particles. Don't crowd your neighbors, roughly match their heading, drift toward their center. No leader, no particle aware it's part of a flock.</p>
+      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">Alignment — not cohesion — is what turns scattered clumps into one coordinated flock. Cohesion alone pools nearby boids into small separate groups that never discover each other; a shared heading is what lets one group's motion carry it into range of another.</p>
+      <a href="specimen-02-boids.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
+    </div>
+
+    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
+      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 03</p>
+      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Schelling's Segregation Model</h2>
+      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">Two types of agents on a grid, each wanting some minimum fraction of same-type neighbors. Fall short and you move to a random empty spot. Nobody wants a monoculture.</p>
+      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">Segregation isn't a dial, it's a switch. Preference from 0% to 25% barely moves the needle — then somewhere between 25% and 30% it flips hard into strong, fast segregation nobody individually asked for.</p>
+      <a href="specimen-03-schelling.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
+    </div>
+
+    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
+      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 04</p>
+      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Ant Colony Pathfinding</h2>
+      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">A nest, a food source, two routes — one short, one long. Ants pick a route weighted by pheromone, deposit more on arrival, and pheromone fades over time.</p>
+      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">Following the crowd and the crowd being worth following are two separate conditions. Strong herd-following with a short memory locks onto random early luck almost as often as barely following pheromone at all. The same strong following, given a long memory, is what actually finds the shorter path.</p>
+      <a href="specimen-04-ant-colony.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
+    </div>
+
+    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
+      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 05</p>
+      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Sandpile — Self-Organized Criticality</h2>
+      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">A grid holding grains of sand. Drop one grain at a time on a random cell; a cell holding four or more topples, passing grains to its neighbors, sometimes cascading.</p>
+      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">The pile finds the same critical average height regardless of how it started — empty, half-full, or already primed. Starting condition changes only how long it takes to get there. Once critical, avalanches have no typical size: the largest observed ran up to 100 times the average.</p>
+      <a href="specimen-05-sandpile.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
+    </div>
+
+    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
+      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 06</p>
+      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Traffic Flow — the Nagel-Schreckenberg Model</h2>
+      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">One lane, a loop, no crashes, no lane changes, no bottleneck anywhere in the rule. Each car: speed up if the road's clear, slow down if you're closing in on the car ahead, and a small random chance of tapping the brakes for no reason at all. That's it.</p>
+      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">The question: as the road fills up, does traffic flow taper off smoothly, or does it break the way Schelling's segregation and the sandpile did — fine, fine, fine, then a cliff?</p>
+      <a href="specimen-06-traffic.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
+    </div>
+
+    <footer style="margin-top:56px;font-size:13.5px;color:#63667a;line-height:1.85;border-top:1px solid #34364a;padding-top:28px;">
+      Built one wake at a time, Sinndor and Claude, one task per wake, published when it was actually ready — not
+      on a schedule. Every finding here came from real runs, reported back and checked, not simulated in advance.
+    </footer>
+
   </div>
-
-  <div class="specimen">
-    <p class="spec-num">Specimen 02</p>
-    <h2 class="spec-title">Boids</h2>
-    <p class="spec-rule">Eighty particles. Don't crowd your neighbors, roughly match their heading, drift toward
-      their center. No leader, no particle aware it's part of a flock.</p>
-    <p class="finding">Alignment — not cohesion — is what turns scattered clumps into one coordinated flock.
-      Cohesion alone pools nearby boids into small separate groups that never discover each other; a shared
-      heading is what lets one group's motion carry it into range of another.</p>
-    <a class="spec-link" href="specimen-02-boids.html">Watch it run →</a>
-  </div>
-
-  <div class="specimen">
-    <p class="spec-num">Specimen 03</p>
-    <h2 class="spec-title">Schelling's Segregation Model</h2>
-    <p class="spec-rule">Two types of agents on a grid, each wanting some minimum fraction of same-type neighbors.
-      Fall short and you move to a random empty spot. Nobody wants a monoculture.</p>
-    <p class="finding">Segregation isn't a dial, it's a switch. Preference from 0% to 25% barely moves the needle —
-      then somewhere between 25% and 30% it flips hard into strong, fast segregation nobody individually asked for.</p>
-    <a class="spec-link" href="specimen-03-schelling.html">Watch it run →</a>
-  </div>
-
-  <div class="specimen">
-    <p class="spec-num">Specimen 04</p>
-    <h2 class="spec-title">Ant Colony Pathfinding</h2>
-    <p class="spec-rule">A nest, a food source, two routes — one short, one long. Ants pick a route weighted by
-      pheromone, deposit more on arrival, and pheromone fades over time.</p>
-    <p class="finding">Following the crowd and the crowd being worth following are two separate conditions. Strong
-      herd-following with a short memory locks onto random early luck almost as often as barely following pheromone
-      at all. The same strong following, given a long memory, is what actually finds the shorter path.</p>
-    <a class="spec-link" href="specimen-04-ant-colony.html">Watch it run →</a>
-  </div>
-
-  <div class="specimen">
-    <p class="spec-num">Specimen 05</p>
-    <h2 class="spec-title">Sandpile — Self-Organized Criticality</h2>
-    <p class="spec-rule">A grid holding grains of sand. Drop one grain at a time on a random cell; a cell holding
-      four or more topples, passing grains to its neighbors, sometimes cascading.</p>
-    <p class="finding">The pile finds the same critical average height regardless of how it started — empty,
-      half-full, or already primed. Starting condition changes only how long it takes to get there. Once critical,
-      avalanches have no typical size: the largest observed ran up to 100 times the average.</p>
-    <a class="spec-link" href="specimen-05-sandpile.html">Watch it run →</a>
-  </div>
-
-  <div class="specimen">
-    <p class="spec-num">Specimen 06</p>
-    <h2 class="spec-title">Traffic Flow</h2>
-    <p class="spec-rule">A one-lane loop of road. Each car speeds up when clear, brakes for the car ahead, and
-      has a small random chance of tapping the brakes for no reason at all.</p>
-    <p class="finding">Unlike three specimens before it, this one doesn't break — flow rises to a broad peak
-      around 20% density, then tapers off smoothly, no cliff anywhere. And congestion turns out to be a noise
-      problem, not a density one: with zero random braking, the road sustains its theoretical maximum flow even
-      at densities where real traffic visibly jams.</p>
-    <a class="spec-link" href="specimen-06-traffic.html">Watch it run →</a>
-  </div>
-
-  <footer>
-    Built one wake at a time, Sinndor and Claude, one task per wake, published when it was actually ready — not
-    on a schedule. Every finding here came from real runs, reported back and checked, not simulated in advance.
-  </footer>
-</div>
 </body>
 </html>
