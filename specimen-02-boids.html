@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specimen 02 — Boids</title>
+<style>
+  :root{
+    --bg:#12131b;
+    --surface:#191b26;
+    --surface-2:#20222f;
+    --border:#33364a;
+    --text:#d9d6c9;
+    --text-muted:#8b8fa3;
+    --text-faint:#5b5e72;
+    --amber:#e8b85c;
+    --amber-dim:#8a6a38;
+    --died:#a9694f;
+    --stable:#7fae8a;
+    --oscillate:#6fa0c9;
+    --unresolved:#a68bc9;
+    --font-serif: "Iowan Old Style","Palatino Linotype",Georgia,serif;
+    --font-mono: "SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;}
+  .page{max-width:1040px;margin:0 auto;}
+  .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:34px;margin:0 0 14px;color:var(--text);}
+  .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:640px;margin:0 0 36px;}
+  .layout{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start;}
+  @media (max-width:760px){.layout{grid-template-columns:1fr;}}
+  .slide-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px;}
+  .slide-caption{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-faint);margin:0 0 12px;}
+  canvas{display:block;background:#0b0c12;border:1px solid var(--border);border-radius:3px;width:100%;max-width:420px;height:auto;}
+  #spark{max-width:100%;height:auto;background:#0b0c12;border:1px solid var(--border);border-radius:3px;}
+  .controls{margin-top:16px;}
+  .slider-row{display:grid;grid-template-columns:90px 1fr 34px;gap:10px;align-items:center;margin-bottom:10px;font-size:11px;}
+  .slider-row label{color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;}
+  .slider-row span{color:var(--amber);text-align:right;}
+  input[type=range]{width:100%;accent-color:var(--amber);}
+  .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  button{font-family:var(--font-mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:3px;cursor:pointer;}
+  button:hover:not(:disabled){border-color:var(--amber);color:var(--amber);}
+  button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  button.secondary{color:var(--text-muted);font-size:10.5px;}
+  button.primary{border-color:var(--amber-dim);}
+  .journal{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px;}
+  .journal h2{font-family:var(--font-serif);font-weight:400;font-size:18px;margin:0 0 4px;}
+  .journal .sub{font-size:11px;color:var(--text-faint);margin:0 0 20px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  .stat-box{background:var(--surface-2);border-radius:3px;padding:12px 14px;}
+  .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:6px;}
+  .stat-value{font-size:24px;color:var(--amber);font-family:var(--font-serif);}
+  .current-read{font-size:12.5px;padding:8px 0 4px;}
+  .tag{padding:1px 6px;border-radius:3px;font-size:11px;}
+  .tag.died{background:rgba(169,105,79,0.18);color:var(--died);}
+  .tag.stable{background:rgba(127,174,138,0.18);color:var(--stable);}
+  .tag.oscillate{background:rgba(111,160,201,0.18);color:var(--oscillate);}
+  .tag.unresolved{background:rgba(166,139,201,0.18);color:var(--unresolved);}
+  .divider{border:none;border-top:1px solid var(--border);margin:18px 0;}
+  .log{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:var(--text-muted);margin-top:14px;}
+  .log-entry span.n{color:var(--text-faint);margin-right:8px;}
+  .log-entry{border-bottom:1px solid var(--surface-2);padding-bottom:5px;}
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">Cabinet of emergence — specimen 02</p>
+  <h1>Boids</h1>
+  <p class="intro">
+    Eighty particles, each obeying three local rules — don't crowd your nearest neighbors, roughly match their
+    heading, drift toward their center. No particle knows it's part of a flock. No particle is a leader. Push the
+    weights to extremes and watch when the flock stops looking like a decision.
+  </p>
+
+  <div class="layout">
+    <div class="slide-card">
+      <p class="slide-caption">Live specimen · 80 boids · toroidal field</p>
+      <canvas id="canvas" width="408" height="408" role="img" aria-label="Boids flocking simulation"></canvas>
+
+      <div class="controls">
+        <div class="slider-row"><label for="sep">Separation</label><input type="range" id="sep" min="0" max="3" step="0.1" value="1.5"><span id="sepVal">1.5</span></div>
+        <div class="slider-row"><label for="ali">Alignment</label><input type="range" id="ali" min="0" max="3" step="0.1" value="1.0"><span id="aliVal">1.0</span></div>
+        <div class="slider-row"><label for="coh">Cohesion</label><input type="range" id="coh" min="0" max="3" step="0.1" value="1.0"><span id="cohVal">1.0</span></div>
+        <div class="slider-row"><label for="rad">Perception</label><input type="range" id="rad" min="15" max="120" step="5" value="55"><span id="radVal">55</span></div>
+      </div>
+
+      <div class="btn-row">
+        <button id="btnPlay" class="primary">Pause</button>
+        <button id="btnReset" class="secondary">Reseed</button>
+      </div>
+      <div class="btn-row">
+        <button id="pBalanced" class="secondary">Preset: balanced flock</button>
+        <button id="pNoCoh" class="secondary">Preset: no cohesion</button>
+        <button id="pNoAli" class="secondary">Preset: no alignment</button>
+        <button id="pOnlySep" class="secondary">Preset: only separation</button>
+      </div>
+    </div>
+
+    <div class="journal">
+      <h2>Field journal</h2>
+      <p class="sub" id="totalLine">0 observations logged this session</p>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-label">Order parameter</div>
+          <div class="stat-value" id="orderVal">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Distinct clusters</div>
+          <div class="stat-value" id="clusterVal">—</div>
+        </div>
+      </div>
+
+      <canvas id="spark" width="380" height="70"></canvas>
+      <p class="current-read" id="currentRead">Warming up...</p>
+
+      <div class="btn-row">
+        <button id="btnLog" class="primary">Log this observation</button>
+      </div>
+
+      <hr class="divider">
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const W = 408, H = 408, N = 80;
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const sparkCanvas = document.getElementById('spark');
+const sctx = sparkCanvas.getContext('2d');
+
+const sepSlider = document.getElementById('sep'), aliSlider = document.getElementById('ali'),
+      cohSlider = document.getElementById('coh'), radSlider = document.getElementById('rad');
+const sepVal = document.getElementById('sepVal'), aliVal = document.getElementById('aliVal'),
+      cohVal = document.getElementById('cohVal'), radVal = document.getElementById('radVal');
+
+const orderValEl = document.getElementById('orderVal');
+const clusterValEl = document.getElementById('clusterVal');
+const currentReadEl = document.getElementById('currentRead');
+const totalLine = document.getElementById('totalLine');
+const logEl = document.getElementById('log');
+
+let boids = [];
+let playing = true;
+let frame = 0;
+let logCount = 0;
+let orderHistory = [];
+let liveOrder = 0, liveClusters = 0;
+
+function makeBoids(){
+  boids = [];
+  for(let i=0;i<N;i++){
+    const angle = Math.random()*Math.PI*2;
+    boids.push({
+      x: Math.random()*W, y: Math.random()*H,
+      vx: Math.cos(angle)*1.5, vy: Math.sin(angle)*1.5
+    });
+  }
+}
+
+function wrap(v, max){ if(v<0) return v+max; if(v>=max) return v-max; return v; }
+
+function step(){
+  const sepW = parseFloat(sepSlider.value);
+  const aliW = parseFloat(aliSlider.value);
+  const cohW = parseFloat(cohSlider.value);
+  const R = parseFloat(radSlider.value);
+  const sepR = R * 0.5;
+  const maxSpeed = 2.4, minSpeed = 1.0;
+
+  for(const b of boids){
+    let sepx=0, sepy=0, alix=0, aliy=0, cohx=0, cohy=0, count=0;
+    for(const o of boids){
+      if(o===b) continue;
+      const dx = o.x-b.x, dy = o.y-b.y;
+      const d = Math.sqrt(dx*dx+dy*dy);
+      if(d < R && d > 0.0001){
+        count++;
+        alix += o.vx; aliy += o.vy;
+        cohx += o.x; cohy += o.y;
+        if(d < sepR){
+          sepx -= dx/d; sepy -= dy/d;
+        }
+      }
+    }
+    let ax=0, ay=0;
+    if(count>0){
+      alix/=count; aliy/=count;
+      const alen = Math.sqrt(alix*alix+aliy*aliy)||1;
+      const aSteerX = (alix/alen)*maxSpeed - b.vx;
+      const aSteerY = (aliy/alen)*maxSpeed - b.vy;
+
+      cohx = cohx/count - b.x; cohy = cohy/count - b.y;
+      const clen = Math.sqrt(cohx*cohx+cohy*cohy)||1;
+      const cSteerX = (cohx/clen)*maxSpeed - b.vx;
+      const cSteerY = (cohy/clen)*maxSpeed - b.vy;
+
+      const slen = Math.sqrt(sepx*sepx+sepy*sepy);
+      let sSteerX=0, sSteerY=0;
+      if(slen>0.0001){
+        sSteerX = (sepx/slen)*maxSpeed - b.vx;
+        sSteerY = (sepy/slen)*maxSpeed - b.vy;
+      }
+      ax = sepW*sSteerX + aliW*aSteerX + cohW*cSteerX;
+      ay = sepW*sSteerY + aliW*aSteerY + cohW*cSteerY;
+    }
+    b.vx += ax*0.04; b.vy += ay*0.04;
+    const speed = Math.sqrt(b.vx*b.vx+b.vy*b.vy)||0.001;
+    const clamped = Math.max(minSpeed, Math.min(maxSpeed, speed));
+    b.vx = (b.vx/speed)*clamped; b.vy = (b.vy/speed)*clamped;
+  }
+  for(const b of boids){
+    b.x = wrap(b.x+b.vx, W);
+    b.y = wrap(b.y+b.vy, H);
+  }
+}
+
+function computeOrder(){
+  let sx=0, sy=0;
+  for(const b of boids){
+    const s = Math.sqrt(b.vx*b.vx+b.vy*b.vy)||0.001;
+    sx += b.vx/s; sy += b.vy/s;
+  }
+  return Math.sqrt(sx*sx+sy*sy)/N;
+}
+
+function computeClusters(){
+  const R = parseFloat(radSlider.value);
+  const parent = new Array(N).fill(0).map((_,i)=>i);
+  function find(i){ while(parent[i]!==i){ parent[i]=parent[parent[i]]; i=parent[i]; } return i; }
+  function union(i,j){ const a=find(i), b=find(j); if(a!==b) parent[a]=b; }
+  for(let i=0;i<N;i++){
+    for(let j=i+1;j<N;j++){
+      const dx = boids[i].x-boids[j].x, dy = boids[i].y-boids[j].y;
+      if(Math.sqrt(dx*dx+dy*dy) < R) union(i,j);
+    }
+  }
+  const roots = new Set();
+  for(let i=0;i<N;i++) roots.add(find(i));
+  return roots.size;
+}
+
+function draw(){
+  ctx.fillStyle = '#0b0c12';
+  ctx.fillRect(0,0,W,H);
+  for(const b of boids){
+    const angle = Math.atan2(b.vy, b.vx);
+    ctx.save();
+    ctx.translate(b.x, b.y);
+    ctx.rotate(angle);
+    ctx.fillStyle = 'rgba(232,184,92,0.85)';
+    ctx.beginPath();
+    ctx.moveTo(5,0); ctx.lineTo(-4,3); ctx.lineTo(-4,-3);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawSpark(){
+  sctx.fillStyle = '#0b0c12';
+  sctx.fillRect(0,0,sparkCanvas.width, sparkCanvas.height);
+  sctx.strokeStyle = '#e8b85c';
+  sctx.lineWidth = 1.5;
+  sctx.beginPath();
+  const h = sparkCanvas.height, w = sparkCanvas.width;
+  const hist = orderHistory.slice(-200);
+  hist.forEach((v,i)=>{
+    const x = (i/199)*w;
+    const y = h - v*h;
+    if(i===0) sctx.moveTo(x,y); else sctx.lineTo(x,y);
+  });
+  sctx.stroke();
+}
+
+function currentReadText(order, clusters){
+  if(order > 0.85 && clusters <= 1) return {t:'One coherent, tightly aligned flock.', cls:'stable'};
+  if(order > 0.5 && clusters <= 2) return {t:'Loosely a flock — mostly aligned, one group maybe peeling off.', cls:'oscillate'};
+  if(clusters >= 4) return {t:'Fragmented into several small groups, no single flock forming.', cls:'unresolved'};
+  if(order < 0.3) return {t:'No coherent heading — closer to noise than flocking.', cls:'died'};
+  return {t:'Transitional — not settled into either a flock or noise.', cls:'oscillate'};
+}
+
+function updateStatsDisplay(){
+  orderValEl.textContent = liveOrder.toFixed(2);
+  clusterValEl.textContent = liveClusters;
+  const read = currentReadText(liveOrder, liveClusters);
+  currentReadEl.innerHTML = `<span class="tag ${read.cls}">read</span> ${read.t}`;
+  drawSpark();
+}
+
+function loop(){
+  if(playing){
+    step();
+    frame++;
+    liveOrder = computeOrder();
+    orderHistory.push(liveOrder);
+    if(orderHistory.length>400) orderHistory.shift();
+    if(frame % 15 === 0){
+      liveClusters = computeClusters();
+      updateStatsDisplay();
+    }
+    draw();
+  }
+  requestAnimationFrame(loop);
+}
+
+function logObservation(label){
+  logCount++;
+  totalLine.textContent = `${logCount} observation${logCount===1?'':'s'} logged this session`;
+  const row = document.createElement('div');
+  row.className = 'log-entry';
+  const s = parseFloat(sepSlider.value).toFixed(1), a = parseFloat(aliSlider.value).toFixed(1),
+        c = parseFloat(cohSlider.value).toFixed(1), r = radSlider.value;
+  row.innerHTML = `<span class="n">#${logCount}</span>${label ? '<b>'+label+'</b> — ' : ''}sep ${s} / ali ${a} / coh ${c} / R ${r} — order ${liveOrder.toFixed(2)}, ${liveClusters} cluster${liveClusters===1?'':'s'}`;
+  logEl.prepend(row);
+}
+
+sepSlider.addEventListener('input', ()=> sepVal.textContent = parseFloat(sepSlider.value).toFixed(1));
+aliSlider.addEventListener('input', ()=> aliVal.textContent = parseFloat(aliSlider.value).toFixed(1));
+cohSlider.addEventListener('input', ()=> cohVal.textContent = parseFloat(cohSlider.value).toFixed(1));
+radSlider.addEventListener('input', ()=> radVal.textContent = radSlider.value);
+
+document.getElementById('btnPlay').addEventListener('click', (e)=>{
+  playing = !playing;
+  e.target.textContent = playing ? 'Pause' : 'Play';
+});
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  makeBoids(); orderHistory=[];
+});
+document.getElementById('btnLog').addEventListener('click', ()=> logObservation());
+
+function setSliders(s,a,c,r){
+  sepSlider.value=s; aliSlider.value=a; cohSlider.value=c; if(r!==undefined) radSlider.value=r;
+  sepVal.textContent=s.toFixed(1); aliVal.textContent=a.toFixed(1); cohVal.textContent=c.toFixed(1);
+  if(r!==undefined) radVal.textContent=r;
+}
+document.getElementById('pBalanced').addEventListener('click', ()=>{ setSliders(1.5,1.0,1.0,55); logObservation('preset: balanced'); });
+document.getElementById('pNoCoh').addEventListener('click', ()=>{ setSliders(1.5,1.0,0.0,55); logObservation('preset: no cohesion'); });
+document.getElementById('pNoAli').addEventListener('click', ()=>{ setSliders(1.5,0.0,1.0,55); logObservation('preset: no alignment'); });
+document.getElementById('pOnlySep').addEventListener('click', ()=>{ setSliders(1.5,0.0,0.0,55); logObservation('preset: only separation'); });
+
+makeBoids();
+loop();
+</script>
+</body>
+</html>

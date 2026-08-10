@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specimen 05 — Sandpile</title>
+<style>
+  :root{
+    --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
+    --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
+    --amber:#e8b85c; --amber-dim:#8a6a38;
+    --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
+    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+    --font-mono:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;}
+  .page{max-width:1040px;margin:0 auto;}
+  .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:32px;margin:0 0 14px;}
+  .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:660px;margin:0 0 36px;}
+  .intro b{color:var(--text);font-weight:600;}
+  .layout{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start;}
+  @media (max-width:780px){.layout{grid-template-columns:1fr;}}
+  .slide-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px;}
+  .slide-caption{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-faint);margin:0 0 12px;}
+  canvas{display:block;background:#0b0c12;border:1px solid var(--border);border-radius:3px;width:100%;max-width:396px;height:auto;}
+  #spark{max-width:100%;height:auto;background:#0b0c12;border:1px solid var(--border);border-radius:3px;margin-top:10px;}
+  .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  button{font-family:var(--font-mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:3px;cursor:pointer;}
+  button:hover:not(:disabled){border-color:var(--amber);color:var(--amber);}
+  button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  button:disabled{opacity:0.4;cursor:default;}
+  button.secondary{color:var(--text-muted);font-size:10.5px;}
+  button.primary{border-color:var(--amber-dim);}
+  .status-line{font-size:12px;color:var(--text-muted);margin:12px 0 4px;min-height:16px;}
+  .journal{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px;}
+  .journal h2{font-family:var(--font-serif);font-weight:400;font-size:18px;margin:0 0 4px;}
+  .journal .sub{font-size:11px;color:var(--text-faint);margin:0 0 20px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;}
+  .stat-box{background:var(--surface-2);border-radius:3px;padding:12px 14px;}
+  .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:6px;}
+  .stat-value{font-size:22px;color:var(--amber);font-family:var(--font-serif);}
+  .current-read{font-size:12.5px;padding:4px 0;}
+  .tag{padding:1px 6px;border-radius:3px;font-size:11px;}
+  .tag.died{background:rgba(169,105,79,0.18);color:var(--died);}
+  .tag.stable{background:rgba(127,174,138,0.18);color:var(--stable);}
+  .tag.oscillate{background:rgba(111,160,201,0.18);color:var(--oscillate);}
+  .tag.unresolved{background:rgba(166,139,201,0.18);color:var(--unresolved);}
+  .hist{font-size:11px;color:var(--text-muted);line-height:1.8;margin:10px 0;}
+  .hist .bar-bg{display:inline-block;width:120px;height:8px;background:var(--surface-2);vertical-align:middle;margin:0 8px;position:relative;top:-1px;}
+  .hist .bar-fill{display:inline-block;height:8px;background:var(--amber);vertical-align:top;}
+  .divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+  .log{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:var(--text-muted);}
+  .log-entry{border-bottom:1px solid var(--surface-2);padding-bottom:5px;}
+  .log-entry span.n{color:var(--text-faint);margin-right:8px;}
+  .log-entry b{color:var(--amber);}
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">Cabinet of emergence — specimen 05</p>
+  <h1>Sandpile — self-organized criticality</h1>
+  <p class="intro">
+    A grid where each cell holds grains of sand. Drop one grain on a random cell; if a cell reaches 4, it topples —
+    loses 4, gives 1 to each neighbor, which can trigger more toppling. No target height, no rule that says "stay
+    near the edge of collapse." <b>The question:</b> does the pile organize itself to that edge anyway, regardless
+    of how it started, and do the resulting avalanches have no characteristic size — some tiny, some enormous, no
+    typical one in between?
+  </p>
+
+  <div class="layout">
+    <div class="slide-card">
+      <p class="slide-caption">Live specimen · 36×36 · open boundary</p>
+      <canvas id="canvas" width="396" height="396" role="img" aria-label="Sandpile grid"></canvas>
+      <canvas id="spark" width="380" height="60"></canvas>
+      <p class="status-line" id="statusLine">Ready.</p>
+
+      <div class="btn-row">
+        <button id="btnObserve" class="primary">Observe live (1500 drops)</button>
+        <button id="btnFast">Run fast to 6000 drops</button>
+      </div>
+      <div class="btn-row">
+        <button id="pEmpty" class="secondary">Start: empty</button>
+        <button id="pLow" class="secondary">Start: random low (0-2)</button>
+        <button id="pCrit" class="secondary">Start: near-critical (all 3)</button>
+      </div>
+    </div>
+
+    <div class="journal">
+      <h2>Field journal</h2>
+      <p class="sub" id="totalLine">0 runs logged this session</p>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-label">Avg height</div>
+          <div class="stat-value" id="heightVal">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">This avalanche</div>
+          <div class="stat-value" id="avalVal">—</div>
+        </div>
+      </div>
+      <p class="current-read" id="currentRead">Watching whether average height climbs and plateaus on its own — that plateau, if it happens, is the "self-organized" part.</p>
+
+      <div class="hist" id="histBlock"></div>
+
+      <hr class="divider">
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const N = 36;
+const CELL = 396/N;
+const THRESH = 4;
+const OBSERVE_DROPS = 1500;
+const FAST_DROPS = 6000;
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const sparkCanvas = document.getElementById('spark');
+const sctx = sparkCanvas.getContext('2d');
+const statusLine = document.getElementById('statusLine');
+const heightVal = document.getElementById('heightVal');
+const avalVal = document.getElementById('avalVal');
+const currentRead = document.getElementById('currentRead');
+const totalLine = document.getElementById('totalLine');
+const logEl = document.getElementById('log');
+const histBlock = document.getElementById('histBlock');
+
+let grid = new Int32Array(N*N);
+let startLabel = 'empty';
+let running = false;
+let logCount = 0, runCount = 0;
+
+function setStart(label){
+  startLabel = label;
+  if(label==='empty'){
+    grid = new Int32Array(N*N);
+  } else if(label==='low'){
+    grid = new Int32Array(N*N);
+    for(let i=0;i<grid.length;i++) grid[i] = Math.floor(Math.random()*3);
+  } else if(label==='critical'){
+    grid = new Int32Array(N*N).fill(3);
+  }
+  drawGrid();
+  statusLine.textContent = `Reset to: ${label}. Ready.`;
+}
+
+function addGrainAndRelax(x, y){
+  grid[y*N+x]++;
+  let topples = 0;
+  const queue = [y*N+x];
+  let head = 0;
+  while(head < queue.length){
+    const idx = queue[head++];
+    if(grid[idx] < THRESH) continue;
+    grid[idx] -= THRESH;
+    topples++;
+    const cx = idx % N, cy = Math.floor(idx/N);
+    const nbrs = [[cx-1,cy],[cx+1,cy],[cx,cy-1],[cx,cy+1]];
+    for(const [nx,ny] of nbrs){
+      if(nx>=0 && nx<N && ny>=0 && ny<N){
+        const nIdx = ny*N+nx;
+        grid[nIdx]++;
+        if(grid[nIdx] >= THRESH) queue.push(nIdx);
+      }
+    }
+  }
+  return topples;
+}
+
+function avgHeight(){
+  let s=0; for(let i=0;i<grid.length;i++) s+=grid[i];
+  return s/grid.length;
+}
+
+function binLabel(size){
+  if(size<2) return '1';
+  const p = Math.floor(Math.log2(size));
+  const lo = Math.pow(2,p), hi = Math.pow(2,p+1)-1;
+  return `${lo}-${hi}`;
+}
+function binSort(size){ return size<2?0:Math.floor(Math.log2(size))+1; }
+
+function drawGrid(){
+  ctx.fillStyle = '#0b0c12';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(let y=0;y<N;y++){
+    for(let x=0;x<N;x++){
+      const g = grid[y*N+x];
+      if(g<=0) continue;
+      const op = [0,0.25,0.5,0.85][Math.min(g,3)];
+      ctx.fillStyle = `rgba(232,184,92,${op})`;
+      ctx.fillRect(x*CELL+0.3, y*CELL+0.3, CELL-0.6, CELL-0.6);
+    }
+  }
+}
+
+function drawSpark(history){
+  sctx.fillStyle = '#0b0c12';
+  sctx.fillRect(0,0,sparkCanvas.width, sparkCanvas.height);
+  sctx.strokeStyle = '#e8b85c';
+  sctx.lineWidth = 1.5;
+  const h = sparkCanvas.height, w = sparkCanvas.width;
+  const hist = history.slice(-300);
+  const maxV = Math.max(1, ...hist);
+  sctx.beginPath();
+  hist.forEach((v,i)=>{
+    const x = (i/299)*w;
+    const y = h - (v/maxV)*h*0.9 - 3;
+    if(i===0) sctx.moveTo(x,y); else sctx.lineTo(x,y);
+  });
+  sctx.stroke();
+}
+
+function renderHist(bins, totalAval){
+  const labels = Object.keys(bins).sort((a,b)=> binSort(parseInt(a)) - binSort(parseInt(b)));
+  if(labels.length===0){ histBlock.innerHTML = ''; return; }
+  const maxCount = Math.max(...labels.map(l=>bins[l]));
+  let html = '';
+  for(const l of labels){
+    const c = bins[l];
+    const pct = Math.round((c/maxCount)*100);
+    html += `<div>${l.padStart(9,' ')} <span class="bar-bg"><span class="bar-fill" style="width:${pct}%"></span></span> ${c}</div>`;
+  }
+  histBlock.innerHTML = html;
+}
+
+function readText(recentAvg, priorAvg){
+  if(priorAvg===null) return {t:'Warming up...', cls:'unresolved'};
+  const delta = recentAvg - priorAvg;
+  if(Math.abs(delta) < 0.03) return {t:`Stabilized — fluctuating around ${recentAvg.toFixed(2)}, not trending.`, cls:'stable'};
+  if(delta > 0) return {t:`Still climbing — average height rising toward some ceiling.`, cls:'oscillate'};
+  return {t:`Draining — average height falling.`, cls:'oscillate'};
+}
+
+function setControlsDisabled(d){ document.querySelectorAll('button').forEach(b=>b.disabled=d); }
+
+function logRun(dropCount, finalHeight, sum, count, max, bins){
+  runCount++;
+  logCount++;
+  totalLine.textContent = `${runCount} run${runCount===1?'':'s'} logged this session`;
+  const mean = sum/count;
+  const ratio = mean>0 ? (max/mean) : 0;
+  const row = document.createElement('div');
+  row.className = 'log-entry';
+  row.innerHTML = `<span class="n">#${logCount}</span>start <b>${startLabel}</b> — ${dropCount} drops — avg height ${finalHeight.toFixed(2)} — mean avalanche ${mean.toFixed(1)}, max ${max}, max/mean ${ratio.toFixed(0)}×`;
+  logEl.prepend(row);
+}
+
+async function observeLive(){
+  if(running) return;
+  running = true; setControlsDisabled(true);
+  const heightHistory = [];
+  let sum=0, count=0, max=0;
+  const bins = {};
+  let lastAvalanche = 0;
+  for(let d=0; d<OBSERVE_DROPS; d++){
+    const x = Math.floor(Math.random()*N), y = Math.floor(Math.random()*N);
+    const topples = addGrainAndRelax(x,y);
+    lastAvalanche = topples;
+    sum += topples; count++; if(topples>max) max=topples;
+    const lbl = binLabel(topples);
+    bins[lbl] = (bins[lbl]||0)+1;
+
+    if(d % 3 === 0){
+      const h = avgHeight();
+      heightHistory.push(h);
+      drawGrid();
+      drawSpark(heightHistory);
+      heightVal.textContent = h.toFixed(2);
+      avalVal.textContent = lastAvalanche;
+      renderHist(bins, count);
+      if(heightHistory.length > 40){
+        const recent = heightHistory.slice(-20).reduce((a,b)=>a+b,0)/20;
+        const prior = heightHistory.slice(-40,-20).reduce((a,b)=>a+b,0)/20;
+        const r = readText(recent, prior);
+        currentRead.innerHTML = `<span class="tag ${r.cls}">read</span> ${r.t}`;
+      }
+      statusLine.textContent = `Drop ${d+1}/${OBSERVE_DROPS}...`;
+      await new Promise(res=>setTimeout(res, 8));
+    }
+  }
+  logRun(OBSERVE_DROPS, avgHeight(), sum, count, max, bins);
+  statusLine.textContent = 'Run complete.';
+  running = false; setControlsDisabled(false);
+}
+
+async function runFast(){
+  if(running) return;
+  running = true; setControlsDisabled(true);
+  let sum=0, count=0, max=0;
+  const bins = {};
+  for(let d=0; d<FAST_DROPS; d++){
+    const x = Math.floor(Math.random()*N), y = Math.floor(Math.random()*N);
+    const topples = addGrainAndRelax(x,y);
+    sum += topples; count++; if(topples>max) max=topples;
+    const lbl = binLabel(topples);
+    bins[lbl] = (bins[lbl]||0)+1;
+    if(d % 400 === 0){
+      statusLine.textContent = `Running fast... ${d}/${FAST_DROPS}`;
+      await new Promise(r=>setTimeout(r,5));
+    }
+  }
+  drawGrid();
+  const h = avgHeight();
+  heightVal.textContent = h.toFixed(2);
+  avalVal.textContent = '—';
+  renderHist(bins, count);
+  const mean = sum/count, ratio = max/mean;
+  currentRead.innerHTML = `<span class="tag stable">run read</span> Mean avalanche ${mean.toFixed(1)}, largest ${max} — ${ratio.toFixed(0)}× the mean.`;
+  logRun(FAST_DROPS, h, sum, count, max, bins);
+  statusLine.textContent = 'Fast run complete.';
+  running = false; setControlsDisabled(false);
+}
+
+document.getElementById('btnObserve').addEventListener('click', observeLive);
+document.getElementById('btnFast').addEventListener('click', runFast);
+document.getElementById('pEmpty').addEventListener('click', ()=> setStart('empty'));
+document.getElementById('pLow').addEventListener('click', ()=> setStart('low'));
+document.getElementById('pCrit').addEventListener('click', ()=> setStart('critical'));
+
+setStart('empty');
+</script>
+</body>
+</html>

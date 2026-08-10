@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specimen 01 — Conway's Game of Life</title>
+<style>
+  :root{
+    --bg:#12131b;
+    --surface:#191b26;
+    --surface-2:#20222f;
+    --border:#33364a;
+    --text:#d9d6c9;
+    --text-muted:#8b8fa3;
+    --text-faint:#5b5e72;
+    --amber:#e8b85c;
+    --amber-dim:#8a6a38;
+    --died:#a9694f;
+    --stable:#7fae8a;
+    --oscillate:#6fa0c9;
+    --unresolved:#a68bc9;
+    --font-serif: "Iowan Old Style","Palatino Linotype",Georgia,serif;
+    --font-mono: "SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-mono);
+    padding:40px 20px 80px;
+  }
+  .page{max-width:1040px;margin:0 auto;}
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:var(--font-serif);
+    font-weight:400;
+    font-size:34px;
+    margin:0 0 14px;
+    color:var(--text);
+  }
+  .intro{
+    font-size:13px;
+    line-height:1.7;
+    color:var(--text-muted);
+    max-width:640px;
+    margin:0 0 36px;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:32px;
+    align-items:start;
+  }
+  @media (max-width:760px){
+    .layout{grid-template-columns:1fr;}
+  }
+  .slide-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:20px;
+  }
+  .slide-caption{
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin:0 0 12px;
+  }
+  canvas{
+    display:block;
+    background:#0b0c12;
+    border:1px solid var(--border);
+    border-radius:3px;
+    width:100%;
+    max-width:420px;
+    height:auto;
+  }
+  .status-line{
+    font-size:12px;
+    color:var(--text-muted);
+    margin:14px 0 16px;
+    min-height:16px;
+  }
+  .status-line .tag{
+    padding:1px 6px;
+    border-radius:3px;
+    font-size:11px;
+  }
+  .tag.died{background:rgba(169,105,79,0.18);color:var(--died);}
+  .tag.stable{background:rgba(127,174,138,0.18);color:var(--stable);}
+  .tag.oscillate{background:rgba(111,160,201,0.18);color:var(--oscillate);}
+  .tag.unresolved{background:rgba(166,139,201,0.18);color:var(--unresolved);}
+  .controls{display:flex;flex-direction:column;gap:8px;}
+  button{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 14px;
+    border-radius:3px;
+    cursor:pointer;
+    text-align:left;
+  }
+  button:hover:not(:disabled){border-color:var(--amber);color:var(--amber);}
+  button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  button:disabled{opacity:0.4;cursor:default;}
+  button.secondary{color:var(--text-muted);}
+  .journal{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:24px;
+  }
+  .journal h2{
+    font-family:var(--font-serif);
+    font-weight:400;
+    font-size:18px;
+    margin:0 0 4px;
+  }
+  .journal .sub{
+    font-size:11px;
+    color:var(--text-faint);
+    margin:0 0 20px;
+  }
+  .bars{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+  .bar-row{display:grid;grid-template-columns:90px 1fr 60px;gap:10px;align-items:center;font-size:11px;}
+  .bar-label{color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;}
+  .bar-track{height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden;}
+  .bar-fill{height:100%;width:0%;transition:width 0.4s ease;}
+  .bar-fill.died{background:var(--died);}
+  .bar-fill.stable{background:var(--stable);}
+  .bar-fill.oscillate{background:var(--oscillate);}
+  .bar-fill.unresolved{background:var(--unresolved);}
+  .bar-count{color:var(--text-muted);text-align:right;}
+  .divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+  .log{
+    max-height:180px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    font-size:11.5px;
+    color:var(--text-muted);
+    margin-bottom:20px;
+  }
+  .log-entry span.n{color:var(--text-faint);margin-right:8px;}
+  .reflection{
+    font-family:var(--font-serif);
+    font-style:italic;
+    font-size:14px;
+    line-height:1.7;
+    color:var(--text);
+    border-left:2px solid var(--amber-dim);
+    padding-left:16px;
+  }
+  .reflection.empty{color:var(--text-faint);font-style:normal;font-family:var(--font-mono);font-size:12px;}
+  .reset-link{
+    background:none;border:none;color:var(--text-faint);font-size:10px;
+    text-decoration:underline;cursor:pointer;padding:0;margin-top:16px;
+    font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;
+  }
+  .reset-link:hover{color:var(--text-muted);}
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">Cabinet of emergence — specimen 01</p>
+  <h1>Conway's Game of Life</h1>
+  <p class="intro">
+    Four rules, applied to every cell at once, no cell aware of the whole board: a live cell with two or three live
+    neighbors survives, a dead cell with exactly three live neighbors is born, everything else dies or stays dead.
+    Nobody designs the outcome. Below: one random board watched live, and a running tally of what a random seed
+    tends to become — dies out, freezes solid, settles into a pulse, or never resolves at all.
+  </p>
+
+  <div class="layout">
+    <div class="slide-card">
+      <p class="slide-caption">Live specimen · 34×34 · toroidal</p>
+      <canvas id="canvas" width="408" height="408" role="img" aria-label="Cellular automaton grid"></canvas>
+      <p class="status-line" id="statusLine">Ready to seed.</p>
+      <div class="controls">
+        <button id="btnObserve">Observe one, live</button>
+        <button id="btnBatch">Run a batch of 60</button>
+        <button id="btnClear" class="secondary">Reseed slide</button>
+      </div>
+    </div>
+
+    <div class="journal">
+      <h2>Field journal</h2>
+      <p class="sub" id="totalLine">0 specimens observed this session</p>
+
+      <div class="bars">
+        <div class="bar-row">
+          <span class="bar-label">Died out</span>
+          <div class="bar-track"><div class="bar-fill died" id="barDied"></div></div>
+          <span class="bar-count" id="countDied">0</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Stabilized</span>
+          <div class="bar-track"><div class="bar-fill stable" id="barStable"></div></div>
+          <span class="bar-count" id="countStable">0</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Oscillating</span>
+          <div class="bar-track"><div class="bar-fill oscillate" id="barOscillate"></div></div>
+          <span class="bar-count" id="countOscillate">0</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Unresolved</span>
+          <div class="bar-track"><div class="bar-fill unresolved" id="barUnresolved"></div></div>
+          <span class="bar-count" id="countUnresolved">0</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="log" id="log"></div>
+
+      <hr class="divider">
+
+      <div class="reflection empty" id="reflection">Run a batch to see what the numbers actually look like.</div>
+      <button class="reset-link" id="btnReset">Clear journal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const N = 34;
+const MAX_GEN = 1200;
+const DENSITY = 0.35;
+const CELL = 408 / N;
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const statusLine = document.getElementById('statusLine');
+const totalLine = document.getElementById('totalLine');
+const logEl = document.getElementById('log');
+const reflectionEl = document.getElementById('reflection');
+
+const btnObserve = document.getElementById('btnObserve');
+const btnBatch = document.getElementById('btnBatch');
+const btnClear = document.getElementById('btnClear');
+const btnReset = document.getElementById('btnReset');
+
+const tallies = { died: 0, stable: 0, oscillate: 0, unresolved: 0 };
+const genSums = { died: 0, stable: 0, oscillate: 0, unresolved: 0 };
+let trialCount = 0;
+let logCount = 0;
+let running = false;
+
+function makeGrid(){
+  const g = new Uint8Array(N*N);
+  for(let i=0;i<g.length;i++) g[i] = Math.random() < DENSITY ? 1 : 0;
+  return g;
+}
+function step(g){
+  const out = new Uint8Array(N*N);
+  for(let y=0;y<N;y++){
+    for(let x=0;x<N;x++){
+      let count = 0;
+      for(let dy=-1;dy<=1;dy++){
+        for(let dx=-1;dx<=1;dx++){
+          if(dx===0 && dy===0) continue;
+          const ny=(y+dy+N)%N, nx=(x+dx+N)%N;
+          count += g[ny*N+nx];
+        }
+      }
+      const alive = g[y*N+x];
+      out[y*N+x] = alive ? (count===2||count===3 ? 1:0) : (count===3 ? 1:0);
+    }
+  }
+  return out;
+}
+function isDead(g){
+  for(let i=0;i<g.length;i++) if(g[i]) return false;
+  return true;
+}
+function keyOf(g){ return g.join(''); }
+
+function classify(){
+  let g = makeGrid();
+  const seen = new Map();
+  for(let gen=0; gen<=MAX_GEN; gen++){
+    if(isDead(g)) return {result:'died', generation:gen};
+    const k = keyOf(g);
+    if(seen.has(k)){
+      const period = gen - seen.get(k);
+      return {result: period===1 ? 'stable' : 'oscillate', period, generation:gen};
+    }
+    seen.set(k, gen);
+    g = step(g);
+  }
+  return {result:'unresolved', generation:MAX_GEN};
+}
+
+function drawGrid(g, ageMap){
+  ctx.fillStyle = '#0b0c12';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(let y=0;y<N;y++){
+    for(let x=0;x<N;x++){
+      const i = y*N+x;
+      if(!g[i]) continue;
+      const age = Math.min(ageMap ? ageMap[i] : 0, 12);
+      const dim = 1 - (age/12)*0.55;
+      ctx.fillStyle = `rgba(232,184,92,${dim.toFixed(2)})`;
+      ctx.fillRect(x*CELL+0.5, y*CELL+0.5, CELL-1, CELL-1);
+    }
+  }
+}
+
+function setControlsDisabled(disabled){
+  btnObserve.disabled = disabled;
+  btnBatch.disabled = disabled;
+  btnClear.disabled = disabled;
+}
+
+const labels = {died:'died out', stable:'stabilized', oscillate:'oscillating', unresolved:'unresolved'};
+const tagClass = {died:'died', stable:'stable', oscillate:'oscillate', unresolved:'unresolved'};
+
+function recordTrial(outcome){
+  trialCount++;
+  tallies[outcome.result]++;
+  genSums[outcome.result] += outcome.generation;
+  updateBars();
+  addLogEntry(outcome);
+}
+
+function addLogEntry(outcome){
+  logCount++;
+  const row = document.createElement('div');
+  row.className = 'log-entry';
+  const periodTxt = outcome.period ? `, period ${outcome.period}` : '';
+  row.innerHTML = `<span class="n">#${logCount}</span><span class="tag ${tagClass[outcome.result]}">${labels[outcome.result]}</span> — gen ${outcome.generation}${periodTxt}`;
+  logEl.prepend(row);
+  while(logEl.children.length > 40) logEl.removeChild(logEl.lastChild);
+}
+
+function updateBars(){
+  totalLine.textContent = `${trialCount} specimen${trialCount===1?'':'s'} observed this session`;
+  const total = Math.max(trialCount, 1);
+  const set = (key, barId, countId) => {
+    const pct = (tallies[key]/total*100);
+    document.getElementById(barId).style.width = pct + '%';
+    document.getElementById(countId).textContent = tallies[key];
+  };
+  set('died','barDied','countDied');
+  set('stable','barStable','countStable');
+  set('oscillate','barOscillate','countOscillate');
+  set('unresolved','barUnresolved','countUnresolved');
+}
+
+function writeReflection(){
+  if(trialCount < 10){
+    reflectionEl.className = 'reflection empty';
+    reflectionEl.textContent = 'Run a larger batch — under 10 specimens isn\'t enough to say anything real yet.';
+    return;
+  }
+  const total = trialCount;
+  const pct = k => (tallies[k]/total*100);
+  const avgGen = k => tallies[k] ? Math.round(genSums[k]/tallies[k]) : null;
+
+  let note;
+  if(pct('died') > 55){
+    note = `${Math.round(pct('died'))}% of boards burned out completely — at this density, most of what's born can't sustain itself. Death also arrives fast here, averaging around generation ${avgGen('died')}, well before anything interesting has time to form.`;
+  } else if(pct('oscillate') > pct('stable') && pct('oscillate') > 25){
+    note = `Oscillators outnumber frozen boards — ${Math.round(pct('oscillate'))}% settled into a repeating pulse versus ${Math.round(pct('stable'))}% that went completely still. Movement turned out to be the more common resting state than silence.`;
+  } else if(pct('stable') > pct('oscillate') && pct('stable') > 25){
+    note = `Most survivors go still rather than pulse — ${Math.round(pct('stable'))}% froze into a fixed pattern versus ${Math.round(pct('oscillate'))}% that kept cycling. Whatever configurations these settle into, they're the more stable attractor than repetition.`;
+  } else if(pct('unresolved') > 20){
+    note = `${Math.round(pct('unresolved'))}% never resolved inside ${MAX_GEN} generations — genuinely still evolving, or slow-period oscillators too long to have looped back yet. Worth rerunning with a higher generation cap to see which.`;
+  } else {
+    note = `Roughly even split across outcomes at this density — ${Math.round(pct('died'))}% died, ${Math.round(pct('stable'))}% froze, ${Math.round(pct('oscillate'))}% pulse, ${Math.round(pct('unresolved'))}% still unresolved. No single fate dominates a random 35% fill.`;
+  }
+  reflectionEl.className = 'reflection';
+  reflectionEl.textContent = note;
+}
+
+async function observeOne(){
+  if(running) return;
+  running = true;
+  setControlsDisabled(true);
+  statusLine.innerHTML = 'Seeding a random board&hellip;';
+
+  let g = makeGrid();
+  const ageMap = new Uint16Array(N*N);
+  const seen = new Map();
+  let outcome = null;
+
+  for(let gen=0; gen<=MAX_GEN; gen++){
+    drawGrid(g, ageMap);
+    statusLine.textContent = `Generation ${gen}...`;
+    if(isDead(g)){ outcome = {result:'died', generation:gen}; break; }
+    const k = keyOf(g);
+    if(seen.has(k)){
+      const period = gen - seen.get(k);
+      outcome = {result: period===1 ? 'stable' : 'oscillate', period, generation:gen};
+      break;
+    }
+    seen.set(k, gen);
+    const next = step(g);
+    for(let i=0;i<g.length;i++){
+      ageMap[i] = (g[i] && next[i]) ? ageMap[i]+1 : 0;
+    }
+    g = next;
+    await new Promise(r => setTimeout(r, 18));
+  }
+  if(!outcome) outcome = {result:'unresolved', generation:MAX_GEN};
+
+  const periodTxt = outcome.period ? `, period ${outcome.period}` : '';
+  statusLine.innerHTML = `<span class="tag ${tagClass[outcome.result]}">${labels[outcome.result]}</span> at generation ${outcome.generation}${periodTxt}`;
+  recordTrial(outcome);
+  writeReflection();
+  running = false;
+  setControlsDisabled(false);
+}
+
+async function runBatch(n){
+  if(running) return;
+  running = true;
+  setControlsDisabled(true);
+  let done = 0;
+  const chunk = 4;
+  while(done < n){
+    const thisChunk = Math.min(chunk, n - done);
+    for(let i=0;i<thisChunk;i++){
+      const outcome = classify();
+      recordTrial(outcome);
+      done++;
+    }
+    statusLine.textContent = `Batch running... ${done}/${n}`;
+    await new Promise(r => setTimeout(r, 20));
+  }
+  statusLine.textContent = `Batch complete — ${n} specimens observed.`;
+  writeReflection();
+  running = false;
+  setControlsDisabled(false);
+}
+
+btnObserve.addEventListener('click', observeOne);
+btnBatch.addEventListener('click', () => runBatch(60));
+btnClear.addEventListener('click', () => {
+  if(running) return;
+  drawGrid(makeGrid(), null);
+  statusLine.textContent = 'Reseeded. Not yet observed.';
+});
+btnReset.addEventListener('click', () => {
+  if(running) return;
+  trialCount = 0; logCount = 0;
+  tallies.died = tallies.stable = tallies.oscillate = tallies.unresolved = 0;
+  genSums.died = genSums.stable = genSums.oscillate = genSums.unresolved = 0;
+  logEl.innerHTML = '';
+  updateBars();
+  reflectionEl.className = 'reflection empty';
+  reflectionEl.textContent = 'Run a batch to see what the numbers actually look like.';
+  statusLine.textContent = 'Journal cleared.';
+});
+
+drawGrid(makeGrid(), null);
+</script>
+</body>
+</html>
