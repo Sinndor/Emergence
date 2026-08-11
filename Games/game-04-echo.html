@@ -18,8 +18,13 @@
   h1{font-family:var(--font-serif);font-weight:400;font-size:26px;margin:0 0 6px;letter-spacing:0.02em;}
   .tagline{font-size:12.5px;color:var(--text-muted);margin:0 0 26px;max-width:420px;text-align:center;line-height:1.6;}
   .cabinet{ background:var(--bezel); border-radius:16px; padding:16px 16px 20px; box-shadow:inset 0 0 0 1px rgba(240,180,41,0.15); }
-  .hud{ display:flex; justify-content:space-between; gap:14px; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0 4px 10px; }
+  .hud{ display:flex; justify-content:space-between; align-items:center; gap:14px; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0 4px 10px; }
   .hud b{ color:var(--gold); font-size:15px; letter-spacing:0.02em; }
+  .mute-btn{
+    background:none; border:none; cursor:pointer; padding:2px 4px;
+    font-size:16px; line-height:1; color:var(--text-muted); opacity:0.75;
+  }
+  .mute-btn:hover{ color:var(--gold); opacity:1; }
   .screen-wrap{ position:relative; border-radius:6px; overflow:hidden; width:400px; height:400px; }
   .scanlines{ position:absolute; inset:0; pointer-events:none; z-index:3;
     background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px); }
@@ -61,6 +66,7 @@
     <div class="hud">
       <div>Level <b id="hudLevel">0</b></div>
       <div>Best <b id="hudBest">0</b></div>
+      <button class="mute-btn" id="muteBtn" aria-label="Mute sound">🔊</button>
     </div>
     <div class="screen-wrap">
       <div class="pad-grid">
@@ -83,7 +89,22 @@
 const overlay = document.getElementById('overlay');
 const hudLevel = document.getElementById('hudLevel');
 const hudBest = document.getElementById('hudBest');
+const muteBtn = document.getElementById('muteBtn');
 const pads = [0,1,2,3].map(i=>document.getElementById('pad'+i));
+
+let muted = localStorage.getItem('echoMuted') === 'true';
+function updateMuteBtn(){
+  muteBtn.textContent = muted ? '🔇' : '🔊';
+  muteBtn.setAttribute('aria-label', muted ? 'Unmute sound' : 'Mute sound');
+}
+updateMuteBtn();
+muteBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  ensureAudio();
+  muted = !muted;
+  localStorage.setItem('echoMuted', muted);
+  updateMuteBtn();
+});
 
 let state = 'ready'; // ready | playback | input | over
 let sequence, round, playerIndex, best = 0;
@@ -97,6 +118,7 @@ function ensureAudio(){
 }
 
 function playTone(freq, durMs, type='triangle', vol=0.25){
+  if(muted) return;
   ensureAudio();
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -197,7 +219,7 @@ function endGame(){
 }
 
 pads.forEach((p,i)=> p.addEventListener('click', ()=> onPadClick(i)));
-overlay.addEventListener('click', startGame);
+overlay.addEventListener('click', ()=>{ ensureAudio(); startGame(); });
 </script>
 </body>
 </html>
