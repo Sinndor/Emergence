@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECHO — Arcade Cabinet 04</title>
+<style>
+  :root{
+    --bg:#1a1210; --bezel:#2b1620; --screen:#0d0806;
+    --text:#e8dfd6; --text-muted:#a89890; --text-faint:#6e5f58;
+    --gold:#f0b429; --red:#e0483e; --cyan:#5ad1e6; --violet:#9d7fc9;
+    --font-display:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);padding:36px 20px 70px;display:flex;flex-direction:column;align-items:center;}
+  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:26px;margin:0 0 6px;letter-spacing:0.02em;}
+  .tagline{font-size:12.5px;color:var(--text-muted);margin:0 0 26px;max-width:420px;text-align:center;line-height:1.6;}
+  .cabinet{ background:var(--bezel); border-radius:16px; padding:16px 16px 20px; box-shadow:inset 0 0 0 1px rgba(240,180,41,0.15); }
+  .hud{ display:flex; justify-content:space-between; gap:14px; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0 4px 10px; }
+  .hud b{ color:var(--gold); font-size:15px; letter-spacing:0.02em; }
+  .screen-wrap{ position:relative; border-radius:6px; overflow:hidden; width:400px; height:400px; }
+  .scanlines{ position:absolute; inset:0; pointer-events:none; z-index:3;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px); }
+  .pad-grid{
+    position:absolute; inset:0; background:var(--screen);
+    display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:8px; padding:8px;
+  }
+  .pad{
+    border-radius:8px; cursor:pointer; opacity:0.35; transition:opacity 0.08s;
+    border:none; padding:0;
+  }
+  .pad.lit{ opacity:1; }
+  .pad:disabled{ cursor:default; }
+  .pad-tl{ background:var(--gold); }
+  .pad-tr{ background:var(--cyan); }
+  .pad-bl{ background:var(--violet); }
+  .pad-br{ background:var(--red); }
+  .overlay{
+    position:absolute; inset:0; z-index:4; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+    background:rgba(13,8,6,0.9); gap:10px; padding:20px;
+  }
+  .overlay.hidden{ display:none; }
+  .overlay .big{ font-family:var(--font-serif); font-size:22px; color:var(--gold); }
+  .overlay .stat{ font-size:12.5px; color:var(--text-muted); }
+  .overlay .stat b{ color:var(--text); }
+  .overlay .hint{ font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-top:8px; }
+  .controls-note{ margin-top:16px; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+  <a href="index.html" style="display:inline-block;font-family:var(--font-display);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 12px;">&larr; The Arcade Cabinet</a>
+  <p class="eyebrow">The Arcade Cabinet — game 04</p>
+  <h1>ECHO</h1>
+  <p class="tagline">Watch the sequence. Repeat it back, in order. Every round it grows by one —
+    and it plays a little faster each time. One wrong pad ends the run.</p>
+
+  <div class="cabinet">
+    <div class="hud">
+      <div>Level <b id="hudLevel">0</b></div>
+      <div>Best <b id="hudBest">0</b></div>
+    </div>
+    <div class="screen-wrap">
+      <div class="pad-grid">
+        <button class="pad pad-tl" id="pad0" disabled></button>
+        <button class="pad pad-tr" id="pad1" disabled></button>
+        <button class="pad pad-bl" id="pad2" disabled></button>
+        <button class="pad pad-br" id="pad3" disabled></button>
+      </div>
+      <div class="scanlines"></div>
+      <div class="overlay" id="overlay">
+        <div class="big">ECHO</div>
+        <div class="stat">Click the pads to repeat what you saw, in order.</div>
+        <div class="hint">Click anywhere to start</div>
+      </div>
+    </div>
+  </div>
+  <p class="controls-note">Click / tap the pads</p>
+
+<script>
+const overlay = document.getElementById('overlay');
+const hudLevel = document.getElementById('hudLevel');
+const hudBest = document.getElementById('hudBest');
+const pads = [0,1,2,3].map(i=>document.getElementById('pad'+i));
+
+let state = 'ready'; // ready | playback | input | over
+let sequence, round, playerIndex, best = 0;
+
+const NOTE_FREQS = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+let audioCtx = null;
+
+function ensureAudio(){
+  if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playTone(freq, durMs, type='triangle', vol=0.25){
+  ensureAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  const now = audioCtx.currentTime;
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(vol, now+0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now+durMs/1000);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now+durMs/1000+0.03);
+}
+
+function playMiss(){
+  playTone(160, 180, 'square', 0.2);
+  setTimeout(()=>playTone(120, 220, 'square', 0.18), 60);
+}
+
+function flashPad(i, duration){
+  playTone(NOTE_FREQS[i], duration);
+  return new Promise(resolve=>{
+    pads[i].classList.add('lit');
+    setTimeout(()=>{
+      pads[i].classList.remove('lit');
+      resolve();
+    }, duration);
+  });
+}
+
+function speedForRound(r){
+  return Math.max(220, 550 - r*14);
+}
+
+async function playback(){
+  state = 'playback';
+  setPadsEnabled(false);
+  await new Promise(r=>setTimeout(r,300));
+  const dur = speedForRound(round);
+  for(const padIdx of sequence){
+    await flashPad(padIdx, dur*0.7);
+    await new Promise(r=>setTimeout(r, dur*0.35));
+  }
+  playerIndex = 0;
+  state = 'input';
+  setPadsEnabled(true);
+}
+
+function setPadsEnabled(on){
+  pads.forEach(p=> p.disabled = !on);
+}
+
+function nextRound(){
+  sequence.push(Math.floor(Math.random()*4));
+  round = sequence.length;
+  hudLevel.textContent = round - 1;
+  playback();
+}
+
+function onPadClick(i){
+  if(state !== 'input') return;
+  flashPad(i, 180);
+  if(i === sequence[playerIndex]){
+    playerIndex++;
+    if(playerIndex === sequence.length){
+      hudLevel.textContent = round;
+      setPadsEnabled(false);
+      setTimeout(nextRound, 500);
+    }
+  } else {
+    endGame();
+  }
+}
+
+function startGame(){
+  if(state==='playback' || state==='input') return;
+  sequence = [];
+  round = 0;
+  hudLevel.textContent = 0;
+  overlay.classList.add('hidden');
+  nextRound();
+}
+
+function endGame(){
+  state = 'over';
+  playMiss();
+  setPadsEnabled(false);
+  const finalScore = round - 1;
+  if(finalScore > best) best = finalScore;
+  hudBest.textContent = best;
+  overlay.innerHTML = `
+    <div class="big">RUN OVER</div>
+    <div class="stat">Reached level <b>${finalScore}</b></div>
+    <div class="stat">Best this session: <b>${best}</b></div>
+    <div class="hint">Click anywhere to try again</div>
+  `;
+  overlay.classList.remove('hidden');
+}
+
+pads.forEach((p,i)=> p.addEventListener('click', ()=> onPadClick(i)));
+overlay.addEventListener('click', startGame);
+</script>
+</body>
+</html>
