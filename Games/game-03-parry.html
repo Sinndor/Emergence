@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PARRY — Arcade Cabinet 03</title>
+<style>
+  :root{
+    --bg:#1a1210; --bezel:#2b1620; --screen:#0d0806;
+    --text:#e8dfd6; --text-muted:#a89890; --text-faint:#6e5f58;
+    --gold:#f0b429; --red:#e0483e; --cyan:#5ad1e6;
+    --font-display:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);padding:36px 20px 70px;display:flex;flex-direction:column;align-items:center;}
+  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:26px;margin:0 0 6px;letter-spacing:0.02em;}
+  .tagline{font-size:12.5px;color:var(--text-muted);margin:0 0 26px;max-width:420px;text-align:center;line-height:1.6;}
+  .cabinet{ background:var(--bezel); border-radius:16px; padding:16px 16px 20px; box-shadow:inset 0 0 0 1px rgba(240,180,41,0.15); }
+  .hud{ display:flex; justify-content:space-between; gap:14px; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0 4px 10px; }
+  .hud b{ color:var(--gold); font-size:15px; letter-spacing:0.02em; }
+  .lives{ display:flex; gap:4px; align-items:center; }
+  .pip{ width:9px; height:9px; border-radius:50%; background:var(--gold); }
+  .pip.lost{ background:var(--text-faint); }
+  .screen-wrap{ position:relative; border-radius:6px; overflow:hidden; }
+  canvas{ display:block; background:var(--screen); }
+  .scanlines{ position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px); }
+  .overlay{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:rgba(13,8,6,0.86); gap:10px; padding:20px; }
+  .overlay.hidden{ display:none; }
+  .overlay .big{ font-family:var(--font-serif); font-size:22px; color:var(--gold); }
+  .overlay .stat{ font-size:12.5px; color:var(--text-muted); }
+  .overlay .stat b{ color:var(--text); }
+  .overlay .hint{ font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-top:8px; }
+  .controls-note{ margin-top:16px; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+  <p class="eyebrow">The Arcade Cabinet — game 03</p>
+  <h1>PARRY</h1>
+  <p class="tagline">The ring closes in. Hit it right as it meets the mark. Too early, too late,
+    or not at all — that's a miss. Three misses and you're done.</p>
+
+  <div class="cabinet">
+    <div class="hud">
+      <div>Score <b id="hudScore">0</b></div>
+      <div>Combo <b id="hudCombo">0</b></div>
+      <div class="lives" id="hudLives"></div>
+    </div>
+    <div class="screen-wrap">
+      <canvas id="canvas" width="400" height="400"></canvas>
+      <div class="scanlines"></div>
+      <div class="overlay" id="overlay">
+        <div class="big">PARRY</div>
+        <div class="stat">Press SPACE (or click) exactly when the ring meets the gold ring.</div>
+        <div class="hint">Click or press space to start</div>
+      </div>
+    </div>
+  </div>
+  <p class="controls-note">SPACE or click to parry</p>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 400, H = 400;
+const CX = 200, CY = 190;
+const overlay = document.getElementById('overlay');
+const hudScore = document.getElementById('hudScore');
+const hudCombo = document.getElementById('hudCombo');
+const hudLives = document.getElementById('hudLives');
+
+const TARGET_R = 60;
+const PERFECT_TOL = 6;
+const GOOD_TOL = 16;
+const START_R = 180;
+const AUTO_MISS_R = 30;
+const START_LIVES = 3;
+
+let state = 'ready'; // ready | playing | over
+let score, combo, lives, best = 0;
+let elapsedGame, ringDuration, ringElapsed, ringResolved, radius;
+let resolveTimer, resolveText, resolveColor;
+let lastTime;
+
+function renderLives(){
+  hudLives.innerHTML = '';
+  for(let i=0;i<START_LIVES;i++){
+    const d = document.createElement('div');
+    d.className = 'pip' + (i>=lives ? ' lost' : '');
+    hudLives.appendChild(d);
+  }
+}
+
+function spawnRing(){
+  ringDuration = Math.max(0.65, 1.55 - elapsedGame*0.012);
+  ringElapsed = 0;
+  ringResolved = false;
+  radius = START_R;
+}
+
+function resolve(kind){
+  ringResolved = true;
+  resolveTimer = 0.35;
+  if(kind==='perfect' || kind==='good'){
+    combo++;
+    const mult = 1 + Math.floor(combo/5)*0.5;
+    score += Math.round((kind==='perfect'?100:50)*mult);
+    resolveText = kind==='perfect' ? 'PERFECT' : 'GOOD';
+    resolveColor = kind==='perfect' ? '#f0b429' : '#5ad1e6';
+  } else {
+    combo = 0;
+    lives--;
+    resolveText = 'MISS';
+    resolveColor = '#e0483e';
+    renderLives();
+    if(lives <= 0){
+      resolveTimer = 0.5;
+    }
+  }
+  hudScore.textContent = score;
+  hudCombo.textContent = combo;
+}
+
+function tryParry(){
+  if(state !== 'playing' || ringResolved) return;
+  const diff = Math.abs(radius - TARGET_R);
+  if(diff <= PERFECT_TOL) resolve('perfect');
+  else if(diff <= GOOD_TOL) resolve('good');
+  else resolve('miss');
+}
+
+function update(dt){
+  elapsedGame += dt;
+  if(!ringResolved){
+    ringElapsed += dt;
+    radius = START_R * (1 - ringElapsed/ringDuration);
+    if(radius <= AUTO_MISS_R){
+      resolve('miss');
+    }
+  } else {
+    resolveTimer -= dt;
+    if(resolveTimer <= 0){
+      if(lives <= 0){ endGame(); return; }
+      spawnRing();
+    }
+  }
+}
+
+function draw(){
+  ctx.fillStyle = '#0d0806';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle = 'rgba(240,180,41,0.6)';
+  ctx.setLineDash([4,4]);
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(CX,CY,TARGET_R,0,Math.PI*2); ctx.stroke();
+  ctx.setLineDash([]);
+
+  if(!ringResolved && radius > 0){
+    ctx.strokeStyle = '#5ad1e6';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(CX,CY,Math.max(0,radius),0,Math.PI*2); ctx.stroke();
+  }
+
+  if(ringResolved){
+    const t = Math.max(0, resolveTimer/0.35);
+    ctx.globalAlpha = t;
+    ctx.fillStyle = resolveColor;
+    ctx.font = '600 26px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(resolveText, CX, CY+9);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function loop(now){
+  if(state !== 'playing') return;
+  const dt = Math.min(0.05, (now-lastTime)/1000);
+  lastTime = now;
+  update(dt);
+  if(state !== 'playing') return;
+  draw();
+  requestAnimationFrame(loop);
+}
+
+function startGame(){
+  if(state === 'playing') return;
+  score = 0; combo = 0; lives = START_LIVES; elapsedGame = 0;
+  renderLives();
+  hudScore.textContent = 0; hudCombo.textContent = 0;
+  spawnRing();
+  state = 'playing';
+  overlay.classList.add('hidden');
+  lastTime = performance.now();
+  requestAnimationFrame(loop);
+}
+
+function endGame(){
+  state = 'over';
+  if(score > best){ best = score; }
+  draw();
+  overlay.innerHTML = `
+    <div class="big">GAME OVER</div>
+    <div class="stat">Score: <b>${score}</b></div>
+    <div class="stat">Best this session: <b>${best}</b></div>
+    <div class="hint">Click or press space to try again</div>
+  `;
+  overlay.classList.remove('hidden');
+}
+
+window.addEventListener('keydown', (e)=>{
+  if(e.code === 'Space'){
+    e.preventDefault();
+    if(state === 'playing') tryParry();
+    else startGame();
+  }
+});
+canvas.addEventListener('click', ()=>{
+  if(state === 'playing') tryParry();
+  else startGame();
+});
+overlay.addEventListener('click', ()=>{
+  if(state !== 'playing') startGame();
+});
+
+draw();
+</script>
+</body>
+</html>

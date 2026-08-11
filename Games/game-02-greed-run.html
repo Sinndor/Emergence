@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GREED RUN — Arcade Cabinet 02</title>
+<style>
+  :root{
+    --bg:#1a1210; --bezel:#2b1620; --screen:#0d0806;
+    --text:#e8dfd6; --text-muted:#a89890; --text-faint:#6e5f58;
+    --gold:#f0b429; --red:#e0483e; --cyan:#5ad1e6;
+    --font-display:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);padding:36px 20px 70px;display:flex;flex-direction:column;align-items:center;}
+  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:26px;margin:0 0 6px;letter-spacing:0.02em;}
+  .tagline{font-size:12.5px;color:var(--text-muted);margin:0 0 26px;max-width:430px;text-align:center;line-height:1.6;}
+  .cabinet{ background:var(--bezel); border-radius:16px; padding:16px 16px 20px; box-shadow:inset 0 0 0 1px rgba(240,180,41,0.15); }
+  .hud{ display:flex; justify-content:space-between; gap:14px; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0 4px 10px; }
+  .hud b{ color:var(--gold); font-size:15px; letter-spacing:0.02em; }
+  .screen-wrap{ position:relative; border-radius:6px; overflow:hidden; }
+  canvas{ display:block; background:var(--screen); }
+  .scanlines{ position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px); }
+  .overlay{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:rgba(13,8,6,0.86); gap:10px; padding:20px; }
+  .overlay.hidden{ display:none; }
+  .overlay .big{ font-family:var(--font-serif); font-size:22px; color:var(--gold); }
+  .overlay .big.caught{ color:var(--red); }
+  .overlay .stat{ font-size:12.5px; color:var(--text-muted); }
+  .overlay .stat b{ color:var(--text); }
+  .overlay .hint{ font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-top:8px; }
+  .controls-note{ margin-top:16px; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+  <p class="eyebrow">The Arcade Cabinet — game 02</p>
+  <h1>GREED RUN</h1>
+  <p class="tagline">Collect while you can, bank it by getting back to the ring before it catches you.
+    Every pickup makes it faster. Get caught mid-run and it all evaporates.</p>
+
+  <div class="cabinet">
+    <div class="hud">
+      <div>Banked total <b id="hudBanked">0</b></div>
+      <div>This run <b id="hudRun">0</b></div>
+      <div>Orbs <b id="hudOrbs">0</b></div>
+    </div>
+    <div class="screen-wrap">
+      <canvas id="canvas" width="400" height="400"></canvas>
+      <div class="scanlines"></div>
+      <div class="overlay" id="overlay">
+        <div class="big">GREED RUN</div>
+        <div class="stat">Collect cyan orbs. Return to the gold ring to bank your score.</div>
+        <div class="stat">Picking up orbs wakes it up — and it gets faster with every one you take.</div>
+        <div class="hint">Click or press any move key to start</div>
+      </div>
+    </div>
+  </div>
+  <p class="controls-note">↑↓←→ / WASD to move</p>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 400, H = 400;
+const overlay = document.getElementById('overlay');
+const hudBanked = document.getElementById('hudBanked');
+const hudRun = document.getElementById('hudRun');
+const hudOrbs = document.getElementById('hudOrbs');
+
+const PLAYER_R = 7;
+const PLAYER_SPEED = 170;
+const EXIT = { x: 200, y: 370, r: 22 };
+const ORB_COUNT = 12;
+const CHASER_BASE = 48;
+const CHASER_PER_ORB = 13;
+const CHASER_MAX = 210;
+
+let state = 'ready'; // ready | playing | ended
+let player, orbs, chaser, keys, collected, bankedTotal = 0, chaserActive, t, leftExit;
+
+function randomOrbPos(){
+  let x,y,d;
+  do{
+    x = 30 + Math.random()*(W-60);
+    y = 30 + Math.random()*(H-110);
+    d = Math.hypot(x-EXIT.x, y-EXIT.y);
+  } while(d < 60);
+  return {x,y};
+}
+
+function randomChaserPos(){
+  let x,y,d;
+  do{
+    x = 30 + Math.random()*(W-60);
+    y = 30 + Math.random()*(H-60);
+    d = Math.hypot(x-EXIT.x, y-EXIT.y);
+  } while(d < 120);
+  return {x,y};
+}
+
+function resetRun(){
+  player = { x: EXIT.x, y: EXIT.y };
+  orbs = Array.from({length:ORB_COUNT}, ()=>({...randomOrbPos(), r:5, taken:false}));
+  chaser = { ...randomChaserPos(), active:false };
+  keys = keys || {};
+  collected = 0;
+  chaserActive = false;
+  leftExit = false;
+  t = 0;
+}
+
+function update(dt){
+  t += dt;
+  let mx=0, my=0;
+  if(keys['ArrowUp']||keys['w']||keys['W']) my -= 1;
+  if(keys['ArrowDown']||keys['s']||keys['S']) my += 1;
+  if(keys['ArrowLeft']||keys['a']||keys['A']) mx -= 1;
+  if(keys['ArrowRight']||keys['d']||keys['D']) mx += 1;
+  if(mx!==0||my!==0){
+    const len = Math.hypot(mx,my);
+    player.x += (mx/len)*PLAYER_SPEED*dt;
+    player.y += (my/len)*PLAYER_SPEED*dt;
+  }
+  player.x = Math.max(PLAYER_R, Math.min(W-PLAYER_R, player.x));
+  player.y = Math.max(PLAYER_R, Math.min(H-PLAYER_R, player.y));
+
+  for(const o of orbs){
+    if(o.taken) continue;
+    if(Math.hypot(player.x-o.x, player.y-o.y) < PLAYER_R+o.r){
+      o.taken = true;
+      collected++;
+      if(!chaserActive) chaserActive = true;
+    }
+  }
+
+  if(chaserActive){
+    const speed = Math.min(CHASER_MAX, CHASER_BASE + collected*CHASER_PER_ORB);
+    const dx = player.x-chaser.x, dy = player.y-chaser.y;
+    const d = Math.hypot(dx,dy) || 1;
+    chaser.x += (dx/d)*speed*dt;
+    chaser.y += (dy/d)*speed*dt;
+    if(d < PLAYER_R + 8){
+      endRun('caught');
+      return;
+    }
+  }
+
+  const distToExit = Math.hypot(player.x-EXIT.x, player.y-EXIT.y);
+  if(!leftExit && distToExit >= EXIT.r) leftExit = true;
+  if(leftExit && distToExit < EXIT.r){
+    endRun('banked');
+    return;
+  }
+}
+
+function draw(){
+  ctx.fillStyle = '#0d0806';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle = 'rgba(240,180,41,0.5)';
+  ctx.setLineDash([5,5]);
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(EXIT.x, EXIT.y, EXIT.r, 0, Math.PI*2); ctx.stroke();
+  ctx.setLineDash([]);
+
+  for(const o of orbs){
+    if(o.taken) continue;
+    const pulse = 1 + Math.sin(t*4 + o.x)*0.15;
+    ctx.fillStyle = '#5ad1e6';
+    ctx.beginPath(); ctx.arc(o.x, o.y, o.r*pulse, 0, Math.PI*2); ctx.fill();
+  }
+
+  if(chaserActive){
+    const angle = Math.atan2(player.y-chaser.y, player.x-chaser.x);
+    ctx.save();
+    ctx.translate(chaser.x, chaser.y);
+    ctx.rotate(angle);
+    ctx.fillStyle = '#e0483e';
+    ctx.beginPath();
+    ctx.moveTo(10,0); ctx.lineTo(-7,6); ctx.lineTo(-7,-6);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  } else {
+    ctx.strokeStyle = 'rgba(224,72,62,0.45)';
+    ctx.setLineDash([3,4]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(chaser.x, chaser.y, 9, 0, Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  ctx.rotate(Math.PI/4);
+  ctx.fillStyle = '#f0b429';
+  ctx.fillRect(-PLAYER_R,-PLAYER_R,PLAYER_R*2,PLAYER_R*2);
+  ctx.restore();
+}
+
+function loop(now){
+  if(state !== 'playing') return;
+  const dt = Math.min(0.05, (now-loop.last)/1000);
+  loop.last = now;
+  update(dt);
+  if(state !== 'playing') return;
+  draw();
+  hudRun.textContent = collected*10;
+  hudOrbs.textContent = collected;
+  requestAnimationFrame(loop);
+}
+
+function startRun(){
+  if(state === 'playing') return;
+  resetRun();
+  state = 'playing';
+  overlay.classList.add('hidden');
+  loop.last = performance.now();
+  requestAnimationFrame(loop);
+}
+
+function endRun(kind){
+  state = 'ended';
+  draw();
+  const runScore = collected*10;
+  if(kind==='banked'){
+    bankedTotal += runScore;
+    hudBanked.textContent = bankedTotal;
+    overlay.innerHTML = `
+      <div class="big">BANKED</div>
+      <div class="stat">Collected <b>${collected}</b> orbs — <b>${runScore}</b> points banked</div>
+      <div class="stat">Total banked: <b>${bankedTotal}</b></div>
+      <div class="hint">Click or press a move key for the next run</div>
+    `;
+  } else {
+    overlay.innerHTML = `
+      <div class="big caught">CAUGHT</div>
+      <div class="stat">Had <b>${collected}</b> orbs — <b>${runScore}</b> points, all lost</div>
+      <div class="stat">Total banked stays: <b>${bankedTotal}</b></div>
+      <div class="hint">Click or press a move key to try again</div>
+    `;
+  }
+  overlay.classList.remove('hidden');
+}
+
+window.addEventListener('keydown', (e)=>{
+  keys[e.key] = true;
+  if(state !== 'playing' && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D'].includes(e.key)){
+    startRun();
+  }
+});
+window.addEventListener('keyup', (e)=>{ keys[e.key] = false; });
+overlay.addEventListener('click', startRun);
+canvas.addEventListener('click', startRun);
+
+keys = {};
+player = { x: EXIT.x, y: EXIT.y };
+orbs = Array.from({length:ORB_COUNT}, ()=>({...randomOrbPos(), r:5, taken:false}));
+chaserActive = false;
+chaser = { x:W/2, y:40 };
+t = 0;
+draw();
+</script>
+</body>
+</html>

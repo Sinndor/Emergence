@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Arcade Cabinet</title>
+<style>
+  :root{
+    --bg:#1a1210; --bezel:#2b1620; --screen:#0d0806;
+    --text:#e8dfd6; --text-muted:#a89890; --text-faint:#6e5f58;
+    --gold:#f0b429; --red:#e0483e; --cyan:#5ad1e6;
+    --font-display:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);padding:60px 20px 100px;}
+  .page{max-width:760px;margin:0 auto;}
+  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin:0 0 14px;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:42px;margin:0 0 18px;line-height:1.15;}
+  .lede{font-size:14px;line-height:1.8;color:var(--text-muted);max-width:600px;margin:0 0 60px;}
+  .lede b{color:var(--text);font-weight:600;}
+  .game{
+    background:var(--bezel);
+    border-radius:8px;
+    padding:26px 28px;
+    margin-bottom:22px;
+    box-shadow:inset 0 0 0 1px rgba(240,180,41,0.12);
+  }
+  .game-num{font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin:0 0 6px;}
+  .game-title{font-family:var(--font-serif);font-size:24px;margin:0 0 10px;color:var(--gold);}
+  .game-desc{font-size:13px;line-height:1.7;color:var(--text-muted);margin:0 0 18px;}
+  .game-link{
+    display:inline-block;
+    font-family:var(--font-display);
+    font-size:11px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    text-decoration:none;
+    border:1px solid rgba(90,209,230,0.4);
+    padding:9px 14px;
+    border-radius:3px;
+  }
+  .game-link:hover{background:rgba(90,209,230,0.08);}
+  footer{
+    margin-top:50px;
+    font-size:11.5px;
+    color:var(--text-faint);
+    line-height:1.8;
+    border-top:1px solid var(--bezel);
+    padding-top:24px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">A companion project</p>
+  <h1>The Arcade Cabinet</h1>
+  <p class="lede">
+    One small, complete game per wake, built the same way as <b>Cabinet of Emergence</b> next door — one
+    session, one working thing, nothing left half-finished. Three so far, each testing a different kind of
+    pressure: reflex, decision, and timing.
+  </p>
+
+  <div class="game">
+    <p class="game-num">Game 01</p>
+    <h2 class="game-title">ONE HIT</h2>
+    <p class="game-desc">One life. Dodge the streaks — difficulty ramps the longer you survive. Near-misses
+      get tracked, because cutting it close is the actual point.</p>
+    <a class="game-link" href="game-01-one-hit.html">Play →</a>
+  </div>
+
+  <div class="game">
+    <p class="game-num">Game 02</p>
+    <h2 class="game-title">GREED RUN</h2>
+    <p class="game-desc">Collect orbs while something wakes up and starts hunting you. Bank your score by
+      making it back to the ring before it catches you — or lose it all trying for one more.</p>
+    <a class="game-link" href="game-02-greed-run.html">Play →</a>
+  </div>
+
+  <div class="game">
+    <p class="game-num">Game 03</p>
+    <h2 class="game-title">PARRY</h2>
+    <p class="game-desc">One button, one closing ring. Hit it right as it meets the mark — too early, too
+      late, or not at all, and that's a miss. Three misses ends the run.</p>
+    <a class="game-link" href="game-03-parry.html">Play →</a>
+  </div>
+
+  <footer>
+    Built one wake at a time, Sinndor and Claude, one game per session, published when it was actually ready.
+  </footer>
+</div>
+</body>
+</html>
