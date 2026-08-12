@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specimen 07 — Percolation</title>
+<style>
+  :root{
+    --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
+    --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
+    --amber:#e8b85c; --amber-dim:#8a6a38;
+    --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
+    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+    --font-mono:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;}
+  .page{max-width:1040px;margin:0 auto;}
+  .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:32px;margin:0 0 14px;}
+  .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:660px;margin:0 0 36px;}
+  .intro b{color:var(--text);font-weight:600;}
+  .layout{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start;}
+  @media (max-width:780px){.layout{grid-template-columns:1fr;}}
+  .slide-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px;}
+  .slide-caption{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-faint);margin:0 0 12px;}
+  canvas{display:block;background:#0b0c12;border:1px solid var(--border);border-radius:3px;width:100%;max-width:400px;height:auto;}
+  .status-line{font-size:12px;color:var(--text-muted);margin:12px 0 4px;min-height:16px;}
+  .controls{margin-top:16px;}
+  .slider-row{display:grid;grid-template-columns:70px 1fr 50px;gap:10px;align-items:center;margin-bottom:10px;font-size:11px;}
+  .slider-row label{color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;}
+  .slider-row span{color:var(--amber);text-align:right;}
+  input[type=range]{width:100%;accent-color:var(--amber);}
+  .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  button{font-family:var(--font-mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:3px;cursor:pointer;}
+  button:hover:not(:disabled){border-color:var(--amber);color:var(--amber);}
+  button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+  button:disabled{opacity:0.4;cursor:default;}
+  button.secondary{color:var(--text-muted);font-size:10.5px;}
+  button.primary{border-color:var(--amber-dim);}
+  .journal{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px;}
+  .journal h2{font-family:var(--font-serif);font-weight:400;font-size:18px;margin:0 0 4px;}
+  .journal .sub{font-size:11px;color:var(--text-faint);margin:0 0 20px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;}
+  .stat-box{background:var(--surface-2);border-radius:3px;padding:12px 14px;}
+  .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:6px;}
+  .stat-value{font-size:22px;color:var(--amber);font-family:var(--font-serif);}
+  .current-read{font-size:12.5px;padding:4px 0;}
+  .tag{padding:1px 6px;border-radius:3px;font-size:11px;}
+  .tag.died{background:rgba(169,105,79,0.18);color:var(--died);}
+  .tag.stable{background:rgba(127,174,138,0.18);color:var(--stable);}
+  .tag.oscillate{background:rgba(111,160,201,0.18);color:var(--oscillate);}
+  .tag.unresolved{background:rgba(166,139,201,0.18);color:var(--unresolved);}
+  .divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+  .log{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:var(--text-muted);}
+  .log-entry{border-bottom:1px solid var(--surface-2);padding-bottom:5px;}
+  .log-entry span.n{color:var(--text-faint);margin-right:8px;}
+  .log-entry b{color:var(--amber);}
+</style>
+</head>
+<body>
+<div class="page">
+  <a href="index.html" style="display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 18px;">&larr; Cabinet of Emergence</a>
+  <p class="eyebrow">Cabinet of emergence — specimen 07</p>
+  <h1>Percolation</h1>
+  <p class="intro">
+    A grid where each cell is independently filled with probability p — no coordination between cells at all,
+    every one flipped on its own. <b>The question:</b> at what p does a connected path first appear spanning
+    from the top edge to the bottom? Site percolation on a square lattice has a known theoretical answer near
+    <b>p ≈ 0.593</b> — this specimen checks whether a real, finite grid actually finds that number, and whether
+    the transition is as sharp as the theory predicts or blurred by the grid being finite.
+  </p>
+
+  <div class="layout">
+    <div class="slide-card">
+      <p class="slide-caption">Live specimen · 60×60 · top-to-bottom spanning</p>
+      <canvas id="canvas" width="400" height="400" role="img" aria-label="Percolation grid"></canvas>
+      <p class="status-line" id="statusLine">Ready.</p>
+
+      <div class="controls">
+        <div class="slider-row"><label for="pval">p</label><input type="range" id="pval" min="0.2" max="0.9" step="0.005" value="0.55"><span id="pValLabel">0.550</span></div>
+      </div>
+
+      <div class="btn-row">
+        <button id="btnGenerate" class="primary">Generate one</button>
+        <button id="btnBatch">Run batch of 30</button>
+      </div>
+      <div class="btn-row">
+        <button id="p30" class="secondary">0.30</button>
+        <button id="p50" class="secondary">0.50</button>
+        <button id="p58" class="secondary">0.58</button>
+        <button id="p593" class="secondary">0.593</button>
+        <button id="p60" class="secondary">0.60</button>
+        <button id="p65" class="secondary">0.65</button>
+        <button id="p85" class="secondary">0.85</button>
+      </div>
+    </div>
+
+    <div class="journal">
+      <h2>Field journal</h2>
+      <p class="sub" id="totalLine">0 batches logged this session</p>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-label">This grid</div>
+          <div class="stat-value" id="spanVal">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Occupied</div>
+          <div class="stat-value" id="occVal">—</div>
+        </div>
+      </div>
+      <p class="current-read" id="currentRead">Amber = filled but not connected to the top edge. Blue = connected to the top but hasn't reached bottom. Green = a full spanning path exists.</p>
+
+      <hr class="divider">
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const N = 60;
+const CELL = 400/N;
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const pSlider = document.getElementById('pval');
+const pValLabel = document.getElementById('pValLabel');
+const statusLine = document.getElementById('statusLine');
+const spanVal = document.getElementById('spanVal');
+const occVal = document.getElementById('occVal');
+const currentRead = document.getElementById('currentRead');
+const totalLine = document.getElementById('totalLine');
+const logEl = document.getElementById('log');
+
+let running = false;
+let logCount = 0, runCount = 0;
+
+function makeOccupied(p){
+  const occ = new Uint8Array(N*N);
+  let count = 0;
+  for(let i=0;i<occ.length;i++){ if(Math.random()<p){ occ[i]=1; count++; } }
+  return {occ, count};
+}
+
+function floodFromTop(occ){
+  const visited = new Uint8Array(N*N);
+  const queue = [];
+  for(let x=0;x<N;x++){
+    const idx = x;
+    if(occ[idx] && !visited[idx]){ visited[idx]=1; queue.push(idx); }
+  }
+  let head = 0, reachedBottom = false;
+  while(head < queue.length){
+    const idx = queue[head++];
+    const cx = idx % N, cy = Math.floor(idx/N);
+    if(cy === N-1) reachedBottom = true;
+    const nbrs = [[cx-1,cy],[cx+1,cy],[cx,cy-1],[cx,cy+1]];
+    for(const [nx,ny] of nbrs){
+      if(nx>=0 && nx<N && ny>=0 && ny<N){
+        const nIdx = ny*N+nx;
+        if(occ[nIdx] && !visited[nIdx]){ visited[nIdx]=1; queue.push(nIdx); }
+      }
+    }
+  }
+  return {visited, reachedBottom};
+}
+
+function drawGrid(occ, visited, reachedBottom){
+  ctx.fillStyle = '#0b0c12';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(let y=0;y<N;y++){
+    for(let x=0;x<N;x++){
+      const idx = y*N+x;
+      if(!occ[idx]) continue;
+      let color;
+      if(visited[idx] && reachedBottom) color = 'rgba(127,174,138,0.9)';
+      else if(visited[idx]) color = 'rgba(111,160,201,0.85)';
+      else color = 'rgba(232,184,92,0.4)';
+      ctx.fillStyle = color;
+      ctx.fillRect(x*CELL+0.3, y*CELL+0.3, CELL-0.6, CELL-0.6);
+    }
+  }
+}
+
+pSlider.addEventListener('input', ()=> pValLabel.textContent = parseFloat(pSlider.value).toFixed(3));
+
+function generateOne(){
+  if(running) return;
+  const p = parseFloat(pSlider.value);
+  const {occ, count} = makeOccupied(p);
+  const {visited, reachedBottom} = floodFromTop(occ);
+  drawGrid(occ, visited, reachedBottom);
+  spanVal.textContent = reachedBottom ? 'YES' : 'no';
+  occVal.textContent = (count/(N*N)*100).toFixed(0)+'%';
+  const r = reachedBottom
+    ? {t:'Spans top to bottom.', cls:'stable'}
+    : {t:'No spanning path this grid.', cls:'died'};
+  currentRead.innerHTML = `<span class="tag ${r.cls}">read</span> ${r.t}`;
+  statusLine.textContent = `p = ${p.toFixed(3)}`;
+}
+
+async function runBatch(n){
+  if(running) return;
+  running = true;
+  document.querySelectorAll('button').forEach(b=>b.disabled=true);
+  const p = parseFloat(pSlider.value);
+  let spans = 0;
+  for(let i=0;i<n;i++){
+    const {occ} = makeOccupied(p);
+    const {reachedBottom} = floodFromTop(occ);
+    if(reachedBottom) spans++;
+    if(i % 5 === 0){ statusLine.textContent = `Batch running (p=${p.toFixed(3)})... ${i+1}/${n}`; await new Promise(r=>setTimeout(r,4)); }
+  }
+  const frac = spans/n;
+  runCount++; logCount++;
+  totalLine.textContent = `${runCount} batch${runCount===1?'':'es'} logged this session`;
+  const row = document.createElement('div');
+  row.className = 'log-entry';
+  row.innerHTML = `<span class="n">#${logCount}</span>p <b>${p.toFixed(3)}</b> — n=${n} — spanned <b>${spans}/${n}</b> (${(frac*100).toFixed(0)}%)`;
+  logEl.prepend(row);
+  spanVal.textContent = (frac*100).toFixed(0)+'%';
+  const r = frac>0.9 ? {t:'Almost always spans at this p.', cls:'stable'}
+    : frac<0.1 ? {t:'Almost never spans at this p.', cls:'died'}
+    : {t:'Right in the transition zone — coin-flip territory.', cls:'oscillate'};
+  currentRead.innerHTML = `<span class="tag ${r.cls}">batch read</span> ${r.t}`;
+  statusLine.textContent = 'Batch complete.';
+  running = false;
+  document.querySelectorAll('button').forEach(b=>b.disabled=false);
+}
+
+document.getElementById('btnGenerate').addEventListener('click', generateOne);
+document.getElementById('btnBatch').addEventListener('click', ()=> runBatch(30));
+
+function setP(v){ pSlider.value=v; pValLabel.textContent = v.toFixed(3); }
+document.getElementById('p30').addEventListener('click', ()=> setP(0.30));
+document.getElementById('p50').addEventListener('click', ()=> setP(0.50));
+document.getElementById('p58').addEventListener('click', ()=> setP(0.58));
+document.getElementById('p593').addEventListener('click', ()=> setP(0.593));
+document.getElementById('p60').addEventListener('click', ()=> setP(0.60));
+document.getElementById('p65').addEventListener('click', ()=> setP(0.65));
+document.getElementById('p85').addEventListener('click', ()=> setP(0.85));
+
+generateOne();
+</script>
+</body>
+</html>
