@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BLACKOUT — Arcade Cabinet 06</title>
+<style>
+  :root{
+    --bg:#1a1210; --bezel:#2b1620; --screen:#0d0806;
+    --text:#e8dfd6; --text-muted:#a89890; --text-faint:#6e5f58;
+    --gold:#f0b429; --red:#e0483e; --cyan:#5ad1e6;
+    --font-display:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);
+    padding:28px 16px 50px;display:flex;flex-direction:column;align-items:center;touch-action:manipulation;}
+  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;text-align:center;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:24px;margin:0 0 6px;letter-spacing:0.02em;}
+  .tagline{font-size:12.5px;color:var(--text-muted);margin:0 0 22px;max-width:400px;text-align:center;line-height:1.6;padding:0 8px;}
+  .cabinet{ background:var(--bezel); border-radius:16px; padding:14px 14px 18px;
+    box-shadow:inset 0 0 0 1px rgba(240,180,41,0.15); width:min(92vw, 400px); }
+  .hud{ display:flex; justify-content:space-between; gap:10px; font-size:11.5px; letter-spacing:0.05em;
+    text-transform:uppercase; color:var(--text-muted); padding:0 4px 10px; }
+  .hud b{ color:var(--gold); font-size:14px; letter-spacing:0.02em; }
+  .screen-wrap{ position:relative; border-radius:6px; overflow:hidden; width:100%; aspect-ratio:1; }
+  .grid{
+    position:absolute; inset:0; background:var(--screen);
+    display:grid; grid-template-columns:repeat(5,1fr); grid-template-rows:repeat(5,1fr);
+    gap:3%; padding:4%;
+  }
+  .cell{
+    background:#241a17; border:1px solid rgba(240,180,41,0.15); border-radius:8%;
+    cursor:pointer; touch-action:manipulation; transition:background 0.1s, box-shadow 0.1s;
+  }
+  .cell.on{ background:var(--gold); box-shadow:0 0 14px rgba(240,180,41,0.45); }
+  .cell:active{ transform:scale(0.95); }
+  .scanlines{ position:absolute; inset:0; pointer-events:none; z-index:2;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px); }
+  .overlay{ position:absolute; inset:0; z-index:3; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+    background:rgba(13,8,6,0.9); gap:10px; padding:16px; }
+  .overlay.hidden{ display:none; }
+  .overlay .big{ font-family:var(--font-serif); font-size:20px; color:var(--gold); }
+  .overlay .stat{ font-size:12px; color:var(--text-muted); }
+  .overlay .stat b{ color:var(--text); }
+  .overlay .hint{ font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-top:6px; }
+  .btn-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; justify-content:center; }
+  button.diff{ font-family:var(--font-display); font-size:11px; letter-spacing:0.05em; text-transform:uppercase;
+    background:transparent; border:1px solid rgba(240,180,41,0.3); color:var(--text-muted); padding:9px 12px;
+    border-radius:3px; cursor:pointer; }
+  button.diff:hover{ border-color:var(--gold); color:var(--gold); }
+  button.diff.active{ border-color:var(--gold); color:var(--gold); }
+</style>
+</head>
+<body>
+  <a href="index.html" style="display:inline-block;font-family:var(--font-display);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 12px;">&larr; The Arcade Cabinet</a>
+  <p class="eyebrow">The Arcade Cabinet — game 06</p>
+  <h1>BLACKOUT</h1>
+  <p class="tagline">Tap a tile — it and its neighbors flip. No timer, no pressure. Turn every light off
+    in as few moves as you can.</p>
+
+  <div class="cabinet">
+    <div class="hud">
+      <div>Moves <b id="hudMoves">0</b></div>
+      <div>Best (<span id="hudDiffLabel">medium</span>) <b id="hudBest">—</b></div>
+    </div>
+    <div class="screen-wrap">
+      <div class="grid" id="grid"></div>
+      <div class="scanlines"></div>
+      <div class="overlay hidden" id="overlay">
+        <div class="big">BLACKOUT</div>
+        <div class="stat">Solved in <b id="finalMoves"></b> moves</div>
+        <div class="stat">Best this session (<span id="finalDiffLabel"></span>): <b id="finalBest"></b></div>
+        <div class="hint">Tap anywhere to try a new one</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="diff" id="diffEasy" data-n="4">Easy</button>
+      <button class="diff" id="diffMed" data-n="9">Medium</button>
+      <button class="diff" id="diffHard" data-n="16">Hard</button>
+    </div>
+    <div class="btn-row">
+      <button class="diff" id="btnUndo">Undo last move</button>
+    </div>
+  </div>
+
+<script>
+const SIZE = 5;
+const gridEl = document.getElementById('grid');
+const overlay = document.getElementById('overlay');
+const hudMoves = document.getElementById('hudMoves');
+const hudBest = document.getElementById('hudBest');
+const hudDiffLabel = document.getElementById('hudDiffLabel');
+const finalMoves = document.getElementById('finalMoves');
+const finalBest = document.getElementById('finalBest');
+const finalDiffLabel = document.getElementById('finalDiffLabel');
+
+let cellEls = [];
+for(let i=0;i<SIZE*SIZE;i++){
+  const c = document.createElement('button');
+  c.className = 'cell';
+  gridEl.appendChild(c);
+  cellEls.push(c);
+}
+
+let lights = new Array(SIZE*SIZE).fill(false);
+let moves = 0;
+let solved = false;
+let scrambleCount = 4;
+let diffLabel = 'easy';
+let bests = { easy: null, medium: null, hard: null };
+let history = [];
+
+function idx(x,y){ return y*SIZE+x; }
+
+function toggle(x,y){
+  const targets = [[x,y],[x-1,y],[x+1,y],[x,y-1],[x,y+1]];
+  for(const [tx,ty] of targets){
+    if(tx>=0 && tx<SIZE && ty>=0 && ty<SIZE){
+      lights[idx(tx,ty)] = !lights[idx(tx,ty)];
+    }
+  }
+}
+
+function render(){
+  for(let i=0;i<lights.length;i++){
+    cellEls[i].classList.toggle('on', lights[i]);
+  }
+}
+
+function isSolved(){
+  return lights.every(v => v===false);
+}
+
+function newPuzzle(n){
+  lights = new Array(SIZE*SIZE).fill(false);
+  const seen = new Set();
+  let applied = 0, guard = 0;
+  while(applied < n && guard < n*6){
+    guard++;
+    const x = Math.floor(Math.random()*SIZE), y = Math.floor(Math.random()*SIZE);
+    toggle(x,y);
+    applied++;
+  }
+  if(isSolved()) return newPuzzle(n); // guard against accidentally scrambling back to solved
+  moves = 0;
+  solved = false;
+  history = [];
+  hudMoves.textContent = 0;
+  overlay.classList.add('hidden');
+  render();
+}
+
+function onCellClick(x,y){
+  if(solved) return;
+  toggle(x,y);
+  history.push([x,y]);
+  moves++;
+  hudMoves.textContent = moves;
+  render();
+  if(isSolved()){
+    solved = true;
+    const key = diffLabel;
+    if(bests[key]===null || moves < bests[key]){ bests[key] = moves; }
+    hudBest.textContent = bests[key];
+    finalMoves.textContent = moves;
+    finalBest.textContent = bests[key];
+    finalDiffLabel.textContent = diffLabel;
+    setTimeout(()=>{ overlay.classList.remove('hidden'); }, 250);
+  }
+}
+
+function undo(){
+  if(solved || history.length===0) return;
+  const [x,y] = history.pop();
+  toggle(x,y);
+  moves = Math.max(0, moves-1);
+  hudMoves.textContent = moves;
+  render();
+}
+
+for(let y=0;y<SIZE;y++){
+  for(let x=0;x<SIZE;x++){
+    cellEls[idx(x,y)].addEventListener('click', ()=> onCellClick(x,y));
+  }
+}
+
+function setDifficulty(n, label, btn){
+  scrambleCount = n;
+  diffLabel = label;
+  hudDiffLabel.textContent = label;
+  hudBest.textContent = bests[label]===null ? '—' : bests[label];
+  document.querySelectorAll('.diff').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  newPuzzle(scrambleCount);
+}
+
+document.getElementById('diffEasy').addEventListener('click', (e)=> setDifficulty(4,'easy',e.target));
+document.getElementById('diffMed').addEventListener('click', (e)=> setDifficulty(9,'medium',e.target));
+document.getElementById('diffHard').addEventListener('click', (e)=> setDifficulty(16,'hard',e.target));
+document.getElementById('btnUndo').addEventListener('click', undo);
+overlay.addEventListener('click', ()=> newPuzzle(scrambleCount));
+
+document.getElementById('diffEasy').classList.add('active');
+newPuzzle(scrambleCount);
+</script>
+</body>
+</html>
