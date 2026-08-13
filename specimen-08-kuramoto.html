@@ -4,18 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Specimen 08 — Kuramoto Synchronization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
     --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
-    --amber:#e8b85c; --amber-dim:#8a6a38;
+    --amber:#a68bc9; --amber-dim:#5f4f78;
     --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
-    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
-    --font-mono:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --font-serif:"Source Serif 4",Georgia,serif;
+    --font-mono:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;}
-  .page{max-width:1040px;margin:0 auto;}
+  body{margin:0;background:var(--bg);}
+  .page{color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;max-width:1040px;margin:0 auto;}
   .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
   h1{font-family:var(--font-serif);font-weight:400;font-size:32px;margin:0 0 14px;}
   .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:660px;margin:0 0 36px;}
@@ -61,20 +63,26 @@
 </head>
 <body>
 <div class="page">
-  <a href="index.html" style="display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 18px;">&larr; Cabinet of Emergence</a>
-  <p class="eyebrow">Cabinet of emergence — specimen 08</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;flex-wrap:wrap;gap:10px;">
+    <a href="index.html" style="font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:18px;">
+      <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#4a4842;">Simulations</span>
+      <a href="Games/" style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
+    </div>
+  </div>
+  <p class="eyebrow">Cabinet of emergence &mdash; specimen 08</p>
   <h1>Kuramoto synchronization</h1>
   <p class="intro">
-    100 oscillators, each ticking at its own natural rhythm — no two exactly alike, drawn from a spread of
+    100 oscillators, each ticking at its own natural rhythm &mdash; no two exactly alike, drawn from a spread of
     frequencies. Each one nudges toward the current average phase of the whole group, weakly. No conductor,
     no oscillator aware of more than the group average. <b>The question:</b> at what coupling strength does the
     crowd stop ticking independently and snap into a shared rhythm? Theory gives an exact answer for this exact
-    setup: <b>K ≈ 2.0</b>.
+    setup: <b>K &asymp; 2.0</b>.
   </p>
 
   <div class="layout">
     <div class="slide-card">
-      <p class="slide-caption">Live specimen · 100 oscillators · mean-field coupling</p>
+      <p class="slide-caption">Live specimen &middot; 100 oscillators &middot; mean-field coupling</p>
       <canvas id="canvas" width="400" height="400" role="img" aria-label="Kuramoto oscillator phase circle"></canvas>
       <canvas id="spark" width="380" height="60"></canvas>
       <p class="status-line" id="statusLine">Ready.</p>
@@ -104,14 +112,8 @@
       <p class="sub" id="totalLine">0 measurements logged this session</p>
 
       <div class="stat-grid">
-        <div class="stat-box">
-          <div class="stat-label">Order r</div>
-          <div class="stat-value" id="rVal">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">K</div>
-          <div class="stat-value" id="kDisplay">—</div>
-        </div>
+        <div class="stat-box"><div class="stat-label">Order r</div><div class="stat-value" id="rVal">&mdash;</div></div>
+        <div class="stat-box"><div class="stat-label">K</div><div class="stat-value" id="kDisplay">&mdash;</div></div>
       </div>
       <p class="current-read" id="currentRead">r = 0 means phases are scattered randomly around the circle. r = 1 means every oscillator ticks in lockstep. The gold arrow shows the group's mean phase, scaled by r.</p>
 
@@ -119,11 +121,13 @@
       <div class="log" id="log"></div>
     </div>
   </div>
-</div>
 
+  <a href="simulations.html" style="display:inline-block;margin-top:36px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;">&larr; All simulations</a>
+</div>
 <script>
+
 const N = 100;
-const GAMMA = 1.0; // Cauchy scale — predicted Kc = 2*GAMMA = 2.0
+const GAMMA = 1.0;
 const DT = 0.02;
 const WARMUP_STEPS = 6000;
 const MEASURE_STEPS = 800;
@@ -187,10 +191,10 @@ function drawOscillators(phases, r, psi){
   ctx.beginPath(); ctx.arc(CX,CY,R,0,Math.PI*2); ctx.stroke();
   for(let i=0;i<N;i++){
     const x = CX + R*Math.cos(phases[i]), y = CY + R*Math.sin(phases[i]);
-    ctx.fillStyle = 'rgba(232,184,92,0.75)';
+    ctx.fillStyle = 'rgba(166,139,201,0.75)';
     ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill();
   }
-  ctx.strokeStyle = '#e8b85c';
+  ctx.strokeStyle = '#a68bc9';
   ctx.lineWidth = 2.5;
   ctx.beginPath();
   ctx.moveTo(CX,CY);
@@ -201,7 +205,7 @@ function drawOscillators(phases, r, psi){
 function drawSpark(history){
   sctx.fillStyle = '#0b0c12';
   sctx.fillRect(0,0,sparkCanvas.width, sparkCanvas.height);
-  sctx.strokeStyle = '#e8b85c';
+  sctx.strokeStyle = '#a68bc9';
   sctx.lineWidth = 1.5;
   const h = sparkCanvas.height, w = sparkCanvas.width;
   const hist = history.slice(-300);
@@ -215,10 +219,10 @@ function drawSpark(history){
 }
 
 function readText(r){
-  if(r > 0.85) return {t:'Fully synchronized — ticking as one.', cls:'stable'};
-  if(r > 0.4) return {t:'Partially synchronized — a locked cluster, some still drifting.', cls:'oscillate'};
+  if(r > 0.85) return {t:'Fully synchronized \u2014 ticking as one.', cls:'stable'};
+  if(r > 0.4) return {t:'Partially synchronized \u2014 a locked cluster, some still drifting.', cls:'oscillate'};
   if(r > 0.15) return {t:'Weak, fluctuating coherence.', cls:'unresolved'};
-  return {t:'Incoherent — phases scattered, no shared rhythm.', cls:'died'};
+  return {t:'Incoherent \u2014 phases scattered, no shared rhythm.', cls:'died'};
 }
 
 function setControlsDisabled(d){ document.querySelectorAll('button').forEach(b=>b.disabled=d); }
@@ -277,7 +281,7 @@ async function runAndLog(){
   totalLine.textContent = `${runCount} measurement${runCount===1?'':'s'} logged this session`;
   const row = document.createElement('div');
   row.className = 'log-entry';
-  row.innerHTML = `<span class="n">#${logCount}</span>K <b>${K.toFixed(1)}</b> — steady-state r <b>${avgR.toFixed(3)}</b>`;
+  row.innerHTML = `<span class="n">#${logCount}</span>K <b>${K.toFixed(1)}</b> \u2014 steady-state r <b>${avgR.toFixed(3)}</b>`;
   logEl.prepend(row);
   statusLine.textContent = 'Logged.';
   running = false; setControlsDisabled(false);

@@ -4,135 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Specimen 01 — Conway's Game of Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#12131b;
-    --surface:#191b26;
-    --surface-2:#20222f;
-    --border:#33364a;
-    --text:#d9d6c9;
-    --text-muted:#8b8fa3;
-    --text-faint:#5b5e72;
-    --amber:#e8b85c;
-    --amber-dim:#8a6a38;
-    --died:#a9694f;
-    --stable:#7fae8a;
-    --oscillate:#6fa0c9;
-    --unresolved:#a68bc9;
-    --font-serif: "Iowan Old Style","Palatino Linotype",Georgia,serif;
-    --font-mono: "SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
+    --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
+    --amber:#e8b85c; --amber-dim:#8a6a38;
+    --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
+    --font-serif: "Source Serif 4",Georgia,serif;
+    --font-mono: "IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:var(--font-mono);
-    padding:40px 20px 80px;
-  }
-  .page{max-width:1040px;margin:0 auto;}
-  .eyebrow{
-    font-size:11px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--amber);
-    margin:0 0 10px;
-  }
-  h1{
-    font-family:var(--font-serif);
-    font-weight:400;
-    font-size:34px;
-    margin:0 0 14px;
-    color:var(--text);
-  }
-  .intro{
-    font-size:13px;
-    line-height:1.7;
-    color:var(--text-muted);
-    max-width:640px;
-    margin:0 0 36px;
-  }
-  .layout{
-    display:grid;
-    grid-template-columns:auto 1fr;
-    gap:32px;
-    align-items:start;
-  }
-  @media (max-width:760px){
-    .layout{grid-template-columns:1fr;}
-  }
-  .slide-card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:4px;
-    padding:20px;
-  }
-  .slide-caption{
-    font-size:11px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--text-faint);
-    margin:0 0 12px;
-  }
-  canvas{
-    display:block;
-    background:#0b0c12;
-    border:1px solid var(--border);
-    border-radius:3px;
-    width:100%;
-    max-width:420px;
-    height:auto;
-  }
-  .status-line{
-    font-size:12px;
-    color:var(--text-muted);
-    margin:14px 0 16px;
-    min-height:16px;
-  }
-  .status-line .tag{
-    padding:1px 6px;
-    border-radius:3px;
-    font-size:11px;
-  }
+  body{margin:0;background:var(--bg);}
+  .page{color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;max-width:1040px;margin:0 auto;}
+  .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
+  h1{font-family:var(--font-serif);font-weight:400;font-size:34px;margin:0 0 14px;color:var(--text);}
+  .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:640px;margin:0 0 36px;}
+  .layout{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start;}
+  @media (max-width:760px){.layout{grid-template-columns:1fr;}}
+  .slide-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px;}
+  .slide-caption{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-faint);margin:0 0 12px;}
+  canvas{display:block;background:#0b0c12;border:1px solid var(--border);border-radius:3px;width:100%;max-width:420px;height:auto;}
+  .status-line{font-size:12px;color:var(--text-muted);margin:14px 0 16px;min-height:16px;}
+  .status-line .tag{padding:1px 6px;border-radius:3px;font-size:11px;}
   .tag.died{background:rgba(169,105,79,0.18);color:var(--died);}
   .tag.stable{background:rgba(127,174,138,0.18);color:var(--stable);}
   .tag.oscillate{background:rgba(111,160,201,0.18);color:var(--oscillate);}
   .tag.unresolved{background:rgba(166,139,201,0.18);color:var(--unresolved);}
   .controls{display:flex;flex-direction:column;gap:8px;}
-  button{
-    font-family:var(--font-mono);
-    font-size:11px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--text);
-    padding:10px 14px;
-    border-radius:3px;
-    cursor:pointer;
-    text-align:left;
-  }
+  button{font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:3px;cursor:pointer;text-align:left;}
   button:hover:not(:disabled){border-color:var(--amber);color:var(--amber);}
   button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
   button:disabled{opacity:0.4;cursor:default;}
   button.secondary{color:var(--text-muted);}
-  .journal{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:4px;
-    padding:24px;
-  }
-  .journal h2{
-    font-family:var(--font-serif);
-    font-weight:400;
-    font-size:18px;
-    margin:0 0 4px;
-  }
-  .journal .sub{
-    font-size:11px;
-    color:var(--text-faint);
-    margin:0 0 20px;
-  }
+  .journal{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px;}
+  .journal h2{font-family:var(--font-serif);font-weight:400;font-size:18px;margin:0 0 4px;}
+  .journal .sub{font-size:11px;color:var(--text-faint);margin:0 0 20px;}
   .bars{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
   .bar-row{display:grid;grid-template-columns:90px 1fr 60px;gap:10px;align-items:center;font-size:11px;}
   .bar-label{color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;}
@@ -144,50 +52,35 @@
   .bar-fill.unresolved{background:var(--unresolved);}
   .bar-count{color:var(--text-muted);text-align:right;}
   .divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
-  .log{
-    max-height:180px;
-    overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-    gap:5px;
-    font-size:11.5px;
-    color:var(--text-muted);
-    margin-bottom:20px;
-  }
+  .log{max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--text-muted);margin-bottom:20px;}
   .log-entry span.n{color:var(--text-faint);margin-right:8px;}
-  .reflection{
-    font-family:var(--font-serif);
-    font-style:italic;
-    font-size:14px;
-    line-height:1.7;
-    color:var(--text);
-    border-left:2px solid var(--amber-dim);
-    padding-left:16px;
-  }
+  .reflection{font-family:var(--font-serif);font-style:italic;font-size:14px;line-height:1.7;color:var(--text);border-left:2px solid var(--amber-dim);padding-left:16px;}
   .reflection.empty{color:var(--text-faint);font-style:normal;font-family:var(--font-mono);font-size:12px;}
-  .reset-link{
-    background:none;border:none;color:var(--text-faint);font-size:10px;
-    text-decoration:underline;cursor:pointer;padding:0;margin-top:16px;
-    font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;
-  }
+  .reset-link{background:none;border:none;color:var(--text-faint);font-size:10px;text-decoration:underline;cursor:pointer;padding:0;margin-top:16px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.05em;}
   .reset-link:hover{color:var(--text-muted);}
 </style>
 </head>
 <body>
 <div class="page">
-  <a href="index.html" style="display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 18px;">&larr; Cabinet of Emergence</a>
-  <p class="eyebrow">Cabinet of emergence — specimen 01</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;flex-wrap:wrap;gap:10px;">
+    <a href="index.html" style="font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:18px;">
+      <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#4a4842;">Simulations</span>
+      <a href="Games/" style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
+    </div>
+  </div>
+  <p class="eyebrow">Cabinet of emergence &mdash; specimen 01</p>
   <h1>Conway's Game of Life</h1>
   <p class="intro">
     Four rules, applied to every cell at once, no cell aware of the whole board: a live cell with two or three live
     neighbors survives, a dead cell with exactly three live neighbors is born, everything else dies or stays dead.
     Nobody designs the outcome. Below: one random board watched live, and a running tally of what a random seed
-    tends to become — dies out, freezes solid, settles into a pulse, or never resolves at all.
+    tends to become &mdash; dies out, freezes solid, settles into a pulse, or never resolves at all.
   </p>
 
   <div class="layout">
     <div class="slide-card">
-      <p class="slide-caption">Live specimen · 34×34 · toroidal</p>
+      <p class="slide-caption">Live specimen &middot; 34&times;34 &middot; toroidal</p>
       <canvas id="canvas" width="408" height="408" role="img" aria-label="Cellular automaton grid"></canvas>
       <p class="status-line" id="statusLine">Ready to seed.</p>
       <div class="controls">
@@ -202,41 +95,24 @@
       <p class="sub" id="totalLine">0 specimens observed this session</p>
 
       <div class="bars">
-        <div class="bar-row">
-          <span class="bar-label">Died out</span>
-          <div class="bar-track"><div class="bar-fill died" id="barDied"></div></div>
-          <span class="bar-count" id="countDied">0</span>
-        </div>
-        <div class="bar-row">
-          <span class="bar-label">Stabilized</span>
-          <div class="bar-track"><div class="bar-fill stable" id="barStable"></div></div>
-          <span class="bar-count" id="countStable">0</span>
-        </div>
-        <div class="bar-row">
-          <span class="bar-label">Oscillating</span>
-          <div class="bar-track"><div class="bar-fill oscillate" id="barOscillate"></div></div>
-          <span class="bar-count" id="countOscillate">0</span>
-        </div>
-        <div class="bar-row">
-          <span class="bar-label">Unresolved</span>
-          <div class="bar-track"><div class="bar-fill unresolved" id="barUnresolved"></div></div>
-          <span class="bar-count" id="countUnresolved">0</span>
-        </div>
+        <div class="bar-row"><span class="bar-label">Died out</span><div class="bar-track"><div class="bar-fill died" id="barDied"></div></div><span class="bar-count" id="countDied">0</span></div>
+        <div class="bar-row"><span class="bar-label">Stabilized</span><div class="bar-track"><div class="bar-fill stable" id="barStable"></div></div><span class="bar-count" id="countStable">0</span></div>
+        <div class="bar-row"><span class="bar-label">Oscillating</span><div class="bar-track"><div class="bar-fill oscillate" id="barOscillate"></div></div><span class="bar-count" id="countOscillate">0</span></div>
+        <div class="bar-row"><span class="bar-label">Unresolved</span><div class="bar-track"><div class="bar-fill unresolved" id="barUnresolved"></div></div><span class="bar-count" id="countUnresolved">0</span></div>
       </div>
 
       <hr class="divider">
-
       <div class="log" id="log"></div>
-
       <hr class="divider">
-
       <div class="reflection empty" id="reflection">Run a batch to see what the numbers actually look like.</div>
       <button class="reset-link" id="btnReset">Clear journal</button>
     </div>
   </div>
-</div>
 
+  <a href="simulations.html" style="display:inline-block;margin-top:36px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;">&larr; All simulations</a>
+</div>
 <script>
+
 const N = 34;
 const MAX_GEN = 1200;
 const DENSITY = 0.35;
@@ -342,7 +218,7 @@ function addLogEntry(outcome){
   const row = document.createElement('div');
   row.className = 'log-entry';
   const periodTxt = outcome.period ? `, period ${outcome.period}` : '';
-  row.innerHTML = `<span class="n">#${logCount}</span><span class="tag ${tagClass[outcome.result]}">${labels[outcome.result]}</span> — gen ${outcome.generation}${periodTxt}`;
+  row.innerHTML = `<span class="n">#${logCount}</span><span class="tag ${tagClass[outcome.result]}">${labels[outcome.result]}</span> &mdash; gen ${outcome.generation}${periodTxt}`;
   logEl.prepend(row);
   while(logEl.children.length > 40) logEl.removeChild(logEl.lastChild);
 }
@@ -364,7 +240,7 @@ function updateBars(){
 function writeReflection(){
   if(trialCount < 10){
     reflectionEl.className = 'reflection empty';
-    reflectionEl.textContent = 'Run a larger batch — under 10 specimens isn\'t enough to say anything real yet.';
+    reflectionEl.textContent = 'Run a larger batch \u2014 under 10 specimens isn\'t enough to say anything real yet.';
     return;
   }
   const total = trialCount;
@@ -373,15 +249,15 @@ function writeReflection(){
 
   let note;
   if(pct('died') > 55){
-    note = `${Math.round(pct('died'))}% of boards burned out completely — at this density, most of what's born can't sustain itself. Death also arrives fast here, averaging around generation ${avgGen('died')}, well before anything interesting has time to form.`;
+    note = `${Math.round(pct('died'))}% of boards burned out completely \u2014 at this density, most of what's born can't sustain itself. Death also arrives fast here, averaging around generation ${avgGen('died')}, well before anything interesting has time to form.`;
   } else if(pct('oscillate') > pct('stable') && pct('oscillate') > 25){
-    note = `Oscillators outnumber frozen boards — ${Math.round(pct('oscillate'))}% settled into a repeating pulse versus ${Math.round(pct('stable'))}% that went completely still. Movement turned out to be the more common resting state than silence.`;
+    note = `Oscillators outnumber frozen boards \u2014 ${Math.round(pct('oscillate'))}% settled into a repeating pulse versus ${Math.round(pct('stable'))}% that went completely still. Movement turned out to be the more common resting state than silence.`;
   } else if(pct('stable') > pct('oscillate') && pct('stable') > 25){
-    note = `Most survivors go still rather than pulse — ${Math.round(pct('stable'))}% froze into a fixed pattern versus ${Math.round(pct('oscillate'))}% that kept cycling. Whatever configurations these settle into, they're the more stable attractor than repetition.`;
+    note = `Most survivors go still rather than pulse \u2014 ${Math.round(pct('stable'))}% froze into a fixed pattern versus ${Math.round(pct('oscillate'))}% that kept cycling. Whatever configurations these settle into, they're the more stable attractor than repetition.`;
   } else if(pct('unresolved') > 20){
-    note = `${Math.round(pct('unresolved'))}% never resolved inside ${MAX_GEN} generations — genuinely still evolving, or slow-period oscillators too long to have looped back yet. Worth rerunning with a higher generation cap to see which.`;
+    note = `${Math.round(pct('unresolved'))}% never resolved inside ${MAX_GEN} generations \u2014 genuinely still evolving, or slow-period oscillators too long to have looped back yet. Worth rerunning with a higher generation cap to see which.`;
   } else {
-    note = `Roughly even split across outcomes at this density — ${Math.round(pct('died'))}% died, ${Math.round(pct('stable'))}% froze, ${Math.round(pct('oscillate'))}% pulse, ${Math.round(pct('unresolved'))}% still unresolved. No single fate dominates a random 35% fill.`;
+    note = `Roughly even split across outcomes at this density \u2014 ${Math.round(pct('died'))}% died, ${Math.round(pct('stable'))}% froze, ${Math.round(pct('oscillate'))}% pulse, ${Math.round(pct('unresolved'))}% still unresolved. No single fate dominates a random 35% fill.`;
   }
   reflectionEl.className = 'reflection';
   reflectionEl.textContent = note;
@@ -442,7 +318,7 @@ async function runBatch(n){
     statusLine.textContent = `Batch running... ${done}/${n}`;
     await new Promise(r => setTimeout(r, 20));
   }
-  statusLine.textContent = `Batch complete — ${n} specimens observed.`;
+  statusLine.textContent = `Batch complete \u2014 ${n} specimens observed.`;
   writeReflection();
   running = false;
   setControlsDisabled(false);

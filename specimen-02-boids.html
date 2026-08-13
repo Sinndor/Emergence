@@ -4,27 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Specimen 02 — Boids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#12131b;
-    --surface:#191b26;
-    --surface-2:#20222f;
-    --border:#33364a;
-    --text:#d9d6c9;
-    --text-muted:#8b8fa3;
-    --text-faint:#5b5e72;
-    --amber:#e8b85c;
-    --amber-dim:#8a6a38;
-    --died:#a9694f;
-    --stable:#7fae8a;
-    --oscillate:#6fa0c9;
-    --unresolved:#a68bc9;
-    --font-serif: "Iowan Old Style","Palatino Linotype",Georgia,serif;
-    --font-mono: "SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
+    --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
+    --amber:#6fa0c9; --amber-dim:#3f5f78;
+    --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
+    --font-serif: "Source Serif 4",Georgia,serif;
+    --font-mono: "IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;}
-  .page{max-width:1040px;margin:0 auto;}
+  body{margin:0;background:var(--bg);}
+  .page{color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;max-width:1040px;margin:0 auto;}
   .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
   h1{font-family:var(--font-serif);font-weight:400;font-size:34px;margin:0 0 14px;color:var(--text);}
   .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:640px;margin:0 0 36px;}
@@ -66,18 +59,24 @@
 </head>
 <body>
 <div class="page">
-  <a href="index.html" style="display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 18px;">&larr; Cabinet of Emergence</a>
-  <p class="eyebrow">Cabinet of emergence — specimen 02</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;flex-wrap:wrap;gap:10px;">
+    <a href="index.html" style="font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:18px;">
+      <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#4a4842;">Simulations</span>
+      <a href="Games/" style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
+    </div>
+  </div>
+  <p class="eyebrow">Cabinet of emergence &mdash; specimen 02</p>
   <h1>Boids</h1>
   <p class="intro">
-    Eighty particles, each obeying three local rules — don't crowd your nearest neighbors, roughly match their
+    Eighty particles, each obeying three local rules &mdash; don't crowd your nearest neighbors, roughly match their
     heading, drift toward their center. No particle knows it's part of a flock. No particle is a leader. Push the
     weights to extremes and watch when the flock stops looking like a decision.
   </p>
 
   <div class="layout">
     <div class="slide-card">
-      <p class="slide-caption">Live specimen · 80 boids · toroidal field</p>
+      <p class="slide-caption">Live specimen &middot; 80 boids &middot; toroidal field</p>
       <canvas id="canvas" width="408" height="408" role="img" aria-label="Boids flocking simulation"></canvas>
 
       <div class="controls">
@@ -104,30 +103,24 @@
       <p class="sub" id="totalLine">0 observations logged this session</p>
 
       <div class="stat-grid">
-        <div class="stat-box">
-          <div class="stat-label">Order parameter</div>
-          <div class="stat-value" id="orderVal">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Distinct clusters</div>
-          <div class="stat-value" id="clusterVal">—</div>
-        </div>
+        <div class="stat-box"><div class="stat-label">Order parameter</div><div class="stat-value" id="orderVal">&mdash;</div></div>
+        <div class="stat-box"><div class="stat-label">Distinct clusters</div><div class="stat-value" id="clusterVal">&mdash;</div></div>
       </div>
 
       <canvas id="spark" width="380" height="70"></canvas>
       <p class="current-read" id="currentRead">Warming up...</p>
 
-      <div class="btn-row">
-        <button id="btnLog" class="primary">Log this observation</button>
-      </div>
+      <div class="btn-row"><button id="btnLog" class="primary">Log this observation</button></div>
 
       <hr class="divider">
       <div class="log" id="log"></div>
     </div>
   </div>
-</div>
 
+  <a href="simulations.html" style="display:inline-block;margin-top:36px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;">&larr; All simulations</a>
+</div>
 <script>
+
 const W = 408, H = 408, N = 80;
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -253,7 +246,7 @@ function draw(){
     ctx.save();
     ctx.translate(b.x, b.y);
     ctx.rotate(angle);
-    ctx.fillStyle = 'rgba(232,184,92,0.85)';
+    ctx.fillStyle = 'rgba(111,160,201,0.85)';
     ctx.beginPath();
     ctx.moveTo(5,0); ctx.lineTo(-4,3); ctx.lineTo(-4,-3);
     ctx.closePath(); ctx.fill();
@@ -264,7 +257,7 @@ function draw(){
 function drawSpark(){
   sctx.fillStyle = '#0b0c12';
   sctx.fillRect(0,0,sparkCanvas.width, sparkCanvas.height);
-  sctx.strokeStyle = '#e8b85c';
+  sctx.strokeStyle = '#6fa0c9';
   sctx.lineWidth = 1.5;
   sctx.beginPath();
   const h = sparkCanvas.height, w = sparkCanvas.width;
@@ -279,10 +272,10 @@ function drawSpark(){
 
 function currentReadText(order, clusters){
   if(order > 0.85 && clusters <= 1) return {t:'One coherent, tightly aligned flock.', cls:'stable'};
-  if(order > 0.5 && clusters <= 2) return {t:'Loosely a flock — mostly aligned, one group maybe peeling off.', cls:'oscillate'};
+  if(order > 0.5 && clusters <= 2) return {t:'Loosely a flock \u2014 mostly aligned, one group maybe peeling off.', cls:'oscillate'};
   if(clusters >= 4) return {t:'Fragmented into several small groups, no single flock forming.', cls:'unresolved'};
-  if(order < 0.3) return {t:'No coherent heading — closer to noise than flocking.', cls:'died'};
-  return {t:'Transitional — not settled into either a flock or noise.', cls:'oscillate'};
+  if(order < 0.3) return {t:'No coherent heading \u2014 closer to noise than flocking.', cls:'died'};
+  return {t:'Transitional \u2014 not settled into either a flock or noise.', cls:'oscillate'};
 }
 
 function updateStatsDisplay(){
@@ -316,7 +309,7 @@ function logObservation(label){
   row.className = 'log-entry';
   const s = parseFloat(sepSlider.value).toFixed(1), a = parseFloat(aliSlider.value).toFixed(1),
         c = parseFloat(cohSlider.value).toFixed(1), r = radSlider.value;
-  row.innerHTML = `<span class="n">#${logCount}</span>${label ? '<b>'+label+'</b> — ' : ''}sep ${s} / ali ${a} / coh ${c} / R ${r} — order ${liveOrder.toFixed(2)}, ${liveClusters} cluster${liveClusters===1?'':'s'}`;
+  row.innerHTML = `<span class="n">#${logCount}</span>${label ? '<b>'+label+'</b> \u2014 ' : ''}sep ${s} / ali ${a} / coh ${c} / R ${r} \u2014 order ${liveOrder.toFixed(2)}, ${liveClusters} cluster${liveClusters===1?'':'s'}`;
   logEl.prepend(row);
 }
 

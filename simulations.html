@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cabinet of Emergence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400;0,8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#0d0d10;}
+  a{color:oklch(72% 0.1 65);}
+  a:hover{color:oklch(80% 0.12 65);}
+</style>
+</head>
+<body>
+<div style="min-height:100vh;background:#0d0d10;color:#eae7df;font-family:'IBM Plex Mono',monospace;">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:22px 32px;max-width:1120px;margin:0 auto;flex-wrap:wrap;gap:12px;">
+    <a href="index.html" style="font-size:12px;letter-spacing:0.12em;color:#6f6b60;text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:24px;">
+      <span style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#4a4842;">Simulations</span>
+      <a href="Games/" style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
+    </div>
+  </div>
+
+  <div style="max-width:720px;margin:0 auto;padding:72px 32px 56px;">
+    <p style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(72% 0.1 65);margin:0 0 18px;">Simulations</p>
+    <h1 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:42px;line-height:1.15;margin:0 0 20px;color:#f3f0e6;">Cabinet of Emergence</h1>
+    <p style="font-size:15px;line-height:1.8;color:#a8a396;margin:0;max-width:600px;">
+      Simulations, each built from a handful of local rules with no agent aware of the whole picture.
+      Every one includes a prediction that turned out wrong before it turned out right — left in, because
+      it's usually the more interesting part.
+    </p>
+  </div>
+
+  <div style="max-width:1120px;margin:0 auto;padding:0 32px 100px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;">
+
+    <a href="specimen-01-game-of-life.html" style="display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:8px;background:#15151a;border-top:3px solid oklch(68% 0.09 55);border-left:1px solid #24242a;border-right:1px solid #24242a;border-bottom:1px solid #24242a;text-decoration:none;transition:transform .15s ease;" style-hover="transform:translateY(-3px);">
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:21px;margin:0 0 12px;color:#f3f0e6;">Conway's Game of Life</h2>
+      <p style="font-size:12.5px;line-height:1.65;color:#98938a;margin:0 0 18px;flex:1;">Cells live or die by their neighbors. At 35% starting density, boards almost always settle into stillness or a simple pulse.</p>
+      <span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:oklch(68% 0.09 55);">Watch it run &rarr;</span>
+    </a>
+
+    <a href="specimen-02-boids.html" style="display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:8px;background:#15151a;border-top:3px solid oklch(68% 0.09 195);border-left:1px solid #24242a;border-right:1px solid #24242a;border-bottom:1px solid #24242a;text-decoration:none;transition:transform .15s ease;" style-hover="transform:translateY(-3px);">
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:21px;margin:0 0 12px;color:#f3f0e6;">Boids</h2>
+      <p style="font-size:12.5px;line-height:1.65;color:#98938a;margin:0 0 18px;flex:1;">Eighty particles, three rules, no leader. A shared heading — not sticking close — is what turns clumps into one flock.</p>
+      <span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:oklch(68% 0.09 195);">Watch it run &rarr;</span>
+    </a>
+
+    <a href="specimen-03-schelling.html" style="display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:8px;background:#15151a;border-top:3px solid oklch(68% 0.09 320);border-left:1px solid #24242a;border-right:1px solid #24242a;border-bottom:1px solid #24242a;text-decoration:none;transition:transform .15s ease;" style-hover="transform:translateY(-3px);">
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:21px;margin:0 0 12px;color:#f3f0e6;">Schelling's Segregation Model</h2>
+      <p style="font-size:12.5px;line-height:1.65;color:#98938a;margin:0 0 18px;flex:1;">A mild preference for similar neighbors. Past roughly 25&ndash;30%, segregation flips on hard and fast, and nobody asked for it.</p>
+      <span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:oklch(68% 0.09 320);">Watch it run &rarr;</span>
+    </a>
+
+    <a href="specimen-04-ant-colony.html" style="display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:8px;background:#15151a;border-top:3px solid oklch(68% 0.09 30);border-left:1px solid #24242a;border-right:1px solid #24242a;border-bottom:1px solid #24242a;text-decoration:none;transition:transform .15s ease;" style-hover="transform:translateY(-3px);">
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:21px;margin:0 0 12px;color:#f3f0e6;">Ant Colony Pathfinding</h2>
+      <p style="font-size:12.5px;line-height:1.65;color:#98938a;margin:0 0 18px;flex:1;">Ants weight routes by pheromone. Following the crowd only finds the short path when the memory behind it is long.</p>
+      <span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:oklch(68% 0.09 30);">Watch it run &rarr;</span>
+    </a>
+
+    <a href="specimen-05-sandpile.html" style="display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:8px;background:#15151a;border-top:3px solid oklch(68% 0.09 140);border-left:1px solid #24242a;border-right:1px solid #24242a;border-bottom:1px solid #24242a;text-decoration:none;transition:transform .15s ease;" style-hover="transform:translateY(-3px);">
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:21px;margin:0 0 12px;color:#f3f0e6;">Sandpile</h2>
+      <p style="font-size:12.5px;line-height:1.65;color:#98938a;margin:0 0 18px;flex:1;">Drop grains one at a time. However it starts, the pile finds the same critical height — and avalanches with no typical size.</p>
+      <span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:oklch(68% 0.09 140);">Watch it run &rarr;</span>
+    </a>
+
+    <a href="specimen-06-traffic.html" style="display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:8px;background:#15151a;border-top:3px solid oklch(68% 0.09 230);border-left:1px solid #24242a;border-right:1px solid #24242a;border-bottom:1px solid #24242a;text-decoration:none;transition:transform .15s ease;" style-hover="transform:translateY(-3px);">
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:21px;margin:0 0 12px;color:#f3f0e6;">Traffic Flow</h2>
+      <p style="font-size:12.5px;line-height:1.65;color:#98938a;margin:0 0 18px;flex:1;">One rule: slow down, speed up, occasionally brake for no reason. Does flow taper off smoothly, or hit a cliff?</p>
+      <span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:oklch(68% 0.09 230);">Watch it run &rarr;</span>
+    </a>
+
+    <a href="specimen-07-percolation.html" style="display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:8px;background:#15151a;border-top:3px solid oklch(68% 0.09 90);border-left:1px solid #24242a;border-right:1px solid #24242a;border-bottom:1px solid #24242a;text-decoration:none;transition:transform .15s ease;" style-hover="transform:translateY(-3px);">
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:21px;margin:0 0 12px;color:#f3f0e6;">Percolation</h2>
+      <p style="font-size:12.5px;line-height:1.65;color:#98938a;margin:0 0 18px;flex:1;">Fill cells at random with probability p. Theory puts the spanning threshold at p &asymp; 0.593 — a real, finite grid is the test.</p>
+      <span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:oklch(68% 0.09 90);">Watch it run &rarr;</span>
+    </a>
+
+    <a href="specimen-08-kuramoto.html" style="display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:8px;background:#15151a;border-top:3px solid oklch(68% 0.09 280);border-left:1px solid #24242a;border-right:1px solid #24242a;border-bottom:1px solid #24242a;text-decoration:none;transition:transform .15s ease;" style-hover="transform:translateY(-3px);">
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:21px;margin:0 0 12px;color:#f3f0e6;">Kuramoto Synchronization</h2>
+      <p style="font-size:12.5px;line-height:1.65;color:#98938a;margin:0 0 18px;flex:1;">100 oscillators, each on its own rhythm, nudging toward the average. Theory predicts a snap into sync at K &asymp; 2.0.</p>
+      <span style="font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:oklch(68% 0.09 280);">Watch it run &rarr;</span>
+    </a>
+
+  </div>
+
+  <div style="max-width:1120px;margin:0 auto;padding:0 32px 80px;border-top:1px solid #24242a;padding-top:40px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;">
+    <p style="font-size:12.5px;line-height:1.8;color:#6f6b60;max-width:440px;margin:0;">
+      Every finding here came from a real run, reported back and checked — not simulated in advance.
+    </p>
+    <a href="https://ko-fi.com/sinndor" target="_blank" style="display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:#0d0d10;background:oklch(72% 0.1 65);padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:600;">Support this project</a>
+  </div>
+
+</div>
+<script>
+
+</script>
+</body>
+</html>

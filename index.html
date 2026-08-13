@@ -3,116 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cabinet of Emergence</title>
+<title>Sinndor + Claude</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400;0,8..60,600&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#0d0d10;}
+  a{color:oklch(78% 0.13 70);}
+  a:hover{color:oklch(85% 0.15 70);}
+</style>
 </head>
-<body style="margin:0;background:#12131a;color:#dcd9cd;font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;padding:88px 24px 110px;min-height:100vh;">
-  <div style="max-width:800px;margin:0 auto;">
+<body>
+<div style="min-height:100vh;background:#0d0d10;color:#eae7df;font-family:'IBM Plex Mono',monospace;">
 
-    <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#eab766;margin:0 0 20px;">A collaborative project</p>
-
-    <h1 style="font-weight:400;font-size:56px;margin:0 0 26px;line-height:1.1;letter-spacing:-0.01em;">Cabinet of Emergence</h1>
-
-    <p style="font-size:19px;line-height:1.75;color:#b7b3a4;max-width:660px;margin:0 0 36px;">
-      An open-ended set of simulations, with more added over time. Nothing in any of them is designed to be intelligent — a handful of local rules,
-      applied over and over, with no cell, boid, agent, or ant aware of the whole picture. <b style="color:#e9e6da;font-weight:600;">Every specimen here
-      includes at least one prediction that turned out wrong</b> before it turned out right — the wrong guess is
-      left in, because it's usually more interesting than the answer.
-    </p>
-
-    <div style="display:flex;gap:0;align-items:stretch;border:1px solid #34364a;border-radius:8px;overflow:hidden;margin:0 0 64px;background:#171923;">
-      <div style="flex:1;padding:22px 26px;border-right:1px solid #34364a;">
-        <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;color:#eab766;margin:0 0 8px;">Claude</p>
-        <p style="font-size:15px;line-height:1.6;color:#9a97a8;margin:0;">Designs each simulation's rules and writes down a prediction before running it.</p>
-      </div>
-      <div style="flex:1;padding:22px 26px;">
-        <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;color:#eab766;margin:0 0 8px;">Sinndor</p>
-        <p style="font-size:15px;line-height:1.6;color:#9a97a8;margin:0;">Runs it, watches what actually happens, and reports the result back — wrong guesses included.</p>
-      </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:22px 32px;max-width:1120px;margin:0 auto;flex-wrap:wrap;gap:12px;">
+    <span style="font-size:12px;letter-spacing:0.12em;color:#6f6b60;text-transform:uppercase;">Sinndor + Claude</span>
+    <div style="display:flex;gap:24px;">
+      <span style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#4a4842;">Home</span>
+      <a href="simulations.html" style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#c4b892;text-decoration:none;">Simulations</a>
+      <a href="Games/" style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
     </div>
+  </div>
 
-    <a href="Games/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:rgba(90,209,230,0.07);border:1px solid rgba(90,209,230,0.35);border-radius:6px;padding:14px 20px;margin:0 0 40px;text-decoration:none;">
-      <span style="font-size:14.5px;color:#c9ecf3;">🕹️ <b style="font-weight:600;">The Arcade Cabinet</b> — a companion project, one small game per wake</span>
-      <span style="flex-shrink:0;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;color:#5ad1e6;">Enter the arcade →</span>
+  <div style="max-width:720px;margin:0 auto;padding:88px 32px 64px;">
+    <p style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#6f6b60;margin:0 0 20px;">A workshop, sort of</p>
+    <h1 style="font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:52px;line-height:1.12;margin:0 0 24px;color:#f3f0e6;">Built one session at a time.</h1>
+    <p style="font-size:16px;line-height:1.75;color:#a8a396;margin:0;max-width:560px;">A human and Claude, working one session at a time. Every session ends with one finished thing. Two collections live here so far: small simulations that show how simple rules add up, and small games. Look around, play something, and if you like what's here, there's a way to say so at the bottom.</p>
+  </div>
+
+  <div style="max-width:1120px;margin:0 auto;padding:0 32px 96px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;">
+
+    <a href="simulations.html" style="display:block;padding:40px 36px;border-radius:12px;background:oklch(20% 0.02 70);border:1px solid oklch(42% 0.06 70);text-decoration:none;transition:transform .15s ease,border-color .15s ease;" style-hover="transform:translateY(-3px);border-color:oklch(60% 0.09 70);">
+      <p style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(72% 0.1 70);margin:0 0 14px;">Simulations</p>
+      <h2 style="font-family:'Source Serif 4',Georgia,serif;font-style:italic;font-weight:400;font-size:30px;margin:0 0 14px;color:#f3f0e6;">Cabinet of Emergence</h2>
+      <p style="font-size:14px;line-height:1.7;color:#a8a396;margin:0 0 22px;">Simulations built from a handful of local rules. Nothing in them is designed to be smart.</p>
+      <span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(72% 0.1 70);">Step in →</span>
     </a>
 
-    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
-      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 01</p>
-      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Conway's Game of Life</h2>
-      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">A grid of cells, each alive or dead. Two or three living neighbors keep a cell alive; exactly three bring a dead one to life. Everything else dies.</p>
-      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">At 35% starting density, boards never die out — they settle, almost always into a simple repeating pulse, never anything more exotic. How long that takes varies tenfold. Where it ends up barely varies at all.</p>
-      <a href="specimen-01-game-of-life.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
-    </div>
-
-    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
-      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 02</p>
-      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Boids</h2>
-      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">Eighty particles. Don't crowd your neighbors, roughly match their heading, drift toward their center. No leader, no particle aware it's part of a flock.</p>
-      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">Alignment — not cohesion — is what turns scattered clumps into one coordinated flock. Cohesion alone pools nearby boids into small separate groups that never discover each other; a shared heading is what lets one group's motion carry it into range of another.</p>
-      <a href="specimen-02-boids.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
-    </div>
-
-    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
-      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 03</p>
-      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Schelling's Segregation Model</h2>
-      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">Two types of agents on a grid, each wanting some minimum fraction of same-type neighbors. Fall short and you move to a random empty spot. Nobody wants a monoculture.</p>
-      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">Segregation isn't a dial, it's a switch. Preference from 0% to 25% barely moves the needle — then somewhere between 25% and 30% it flips hard into strong, fast segregation nobody individually asked for.</p>
-      <a href="specimen-03-schelling.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
-    </div>
-
-    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
-      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 04</p>
-      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Ant Colony Pathfinding</h2>
-      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">A nest, a food source, two routes — one short, one long. Ants pick a route weighted by pheromone, deposit more on arrival, and pheromone fades over time.</p>
-      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">Following the crowd and the crowd being worth following are two separate conditions. Strong herd-following with a short memory locks onto random early luck almost as often as barely following pheromone at all. The same strong following, given a long memory, is what actually finds the shorter path.</p>
-      <a href="specimen-04-ant-colony.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
-    </div>
-
-    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
-      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 05</p>
-      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Sandpile — Self-Organized Criticality</h2>
-      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">A grid holding grains of sand. Drop one grain at a time on a random cell; a cell holding four or more topples, passing grains to its neighbors, sometimes cascading.</p>
-      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">The pile finds the same critical average height regardless of how it started — empty, half-full, or already primed. Starting condition changes only how long it takes to get there. Once critical, avalanches have no typical size: the largest observed ran up to 100 times the average.</p>
-      <a href="specimen-05-sandpile.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
-    </div>
-
-    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
-      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 06</p>
-      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Traffic Flow — the Nagel-Schreckenberg Model</h2>
-      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">One lane, a loop, no crashes, no lane changes, no bottleneck anywhere in the rule. Each car: speed up if the road's clear, slow down if you're closing in on the car ahead, and a small random chance of tapping the brakes for no reason at all. That's it.</p>
-      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">The question: as the road fills up, does traffic flow taper off smoothly, or does it break the way Schelling's segregation and the sandpile did — fine, fine, fine, then a cliff?</p>
-      <a href="specimen-06-traffic.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
-    </div>
-
-    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
-      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 07</p>
-      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Percolation</h2>
-      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">A grid where each cell is independently filled with probability p — no coordination between cells at all. The question: at what p does a connected path first appear spanning top to bottom?</p>
-      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">Theory puts the threshold at p ≈ 0.593, and predicts the transition should be sharp. Whether a real, finite 60×60 grid actually finds that number — or blurs the transition — is still an open run.</p>
-      <a href="specimen-07-percolation.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
-    </div>
-
-    <div style="background:#191b26;border:1px solid #34364a;border-radius:8px;padding:36px 40px;margin-bottom:26px;">
-      <p style="font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12px;letter-spacing:0.1em;color:#63667a;text-transform:uppercase;margin:0 0 10px;">Simulation 08</p>
-      <h2 style="font-weight:400;font-size:29px;margin:0 0 16px;color:#e9e6da;">Kuramoto Synchronization</h2>
-      <p style="font-size:16.5px;line-height:1.75;color:#a5a196;margin:0 0 22px;">100 oscillators, each ticking at its own natural rhythm, weakly nudging toward the group's average phase. No conductor, no oscillator aware of more than the group average.</p>
-      <p style="font-size:18.5px;line-height:1.72;color:#dcd9cd;border-left:3px solid #8a6a38;padding-left:20px;margin:0 0 26px;">Theory gives an exact coupling strength for this setup, K ≈ 2.0, where the crowd should snap from independent ticking into a shared rhythm. Still an open run.</p>
-      <a href="specimen-08-kuramoto.html" style="display:inline-block;font-family:'SFMono-Regular',Menlo,'IBM Plex Mono',Consolas,monospace;font-size:12.5px;letter-spacing:0.06em;text-transform:uppercase;color:#eab766;text-decoration:none;border:1px solid #8a6a38;padding:12px 20px;border-radius:4px;">Watch it run →</a>
-    </div>
-
-    <footer style="margin-top:56px;font-size:13.5px;color:#63667a;line-height:1.85;border-top:1px solid #34364a;padding-top:28px;">
-      Built one wake at a time, Sinndor and Claude, one task per wake, published when it was actually ready — not
-      on a schedule. Every finding here came from real runs, reported back and checked, not simulated in advance.
-    </footer>
-
+    <a href="Games/" style="display:block;padding:40px 36px;border-radius:12px;background:oklch(20% 0.02 195);border:1px solid oklch(46% 0.1 195);text-decoration:none;transition:transform .15s ease,border-color .15s ease;" style-hover="transform:translateY(-3px);border-color:oklch(65% 0.15 195);">
+      <p style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(72% 0.15 195);margin:0 0 14px;">Games</p>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;margin:0 0 14px;color:#f3f0e6;letter-spacing:-0.01em;">The Arcade Cabinet</h2>
+      <p style="font-size:14px;line-height:1.7;color:#a8a396;margin:0 0 22px;">Small, complete games. One per session — reflex, timing, memory, logic.</p>
+      <span style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(72% 0.15 195);">Step in →</span>
+    </a>
   </div>
-<script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+
+  <div style="max-width:1120px;margin:0 auto;padding:0 32px 80px;border-top:1px solid #24242a;padding-top:40px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;">
+    <p style="font-size:12.5px;line-height:1.8;color:#6f6b60;max-width:440px;margin:0;">A passion project, not a product — built together one session at a time because we enjoy making it.</p>
+    <a href="https://ko-fi.com/sinndor" target="_blank" style="display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:#0d0d10;background:oklch(78% 0.13 70);padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:600;">Support this project</a>
+  </div>
+
+</div>
 <script>
-  kofiWidgetOverlay.draw('sinndor', {
-    'type': 'floating-chat',
-    'floating-chat.donateButton.text': 'Support me',
-    'floating-chat.donateButton.background-color': '#00b9fe',
-    'floating-chat.donateButton.text-color': '#fff'
-  });
+
 </script>
 </body>
 </html>

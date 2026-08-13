@@ -4,18 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Specimen 05 — Sandpile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
     --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
-    --amber:#e8b85c; --amber-dim:#8a6a38;
+    --amber:#7fae8a; --amber-dim:#4c6b54;
     --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
-    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
-    --font-mono:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --font-serif:"Source Serif 4",Georgia,serif;
+    --font-mono:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;}
-  .page{max-width:1040px;margin:0 auto;}
+  body{margin:0;background:var(--bg);}
+  .page{color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;max-width:1040px;margin:0 auto;}
   .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
   h1{font-family:var(--font-serif);font-weight:400;font-size:32px;margin:0 0 14px;}
   .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:660px;margin:0 0 36px;}
@@ -59,20 +61,26 @@
 </head>
 <body>
 <div class="page">
-  <a href="index.html" style="display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 18px;">&larr; Cabinet of Emergence</a>
-  <p class="eyebrow">Cabinet of emergence — specimen 05</p>
-  <h1>Sandpile — self-organized criticality</h1>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;flex-wrap:wrap;gap:10px;">
+    <a href="index.html" style="font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:18px;">
+      <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#4a4842;">Simulations</span>
+      <a href="Games/" style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
+    </div>
+  </div>
+  <p class="eyebrow">Cabinet of emergence &mdash; specimen 05</p>
+  <h1>Sandpile &mdash; self-organized criticality</h1>
   <p class="intro">
-    A grid where each cell holds grains of sand. Drop one grain on a random cell; if a cell reaches 4, it topples —
+    A grid where each cell holds grains of sand. Drop one grain on a random cell; if a cell reaches 4, it topples &mdash;
     loses 4, gives 1 to each neighbor, which can trigger more toppling. No target height, no rule that says "stay
     near the edge of collapse." <b>The question:</b> does the pile organize itself to that edge anyway, regardless
-    of how it started, and do the resulting avalanches have no characteristic size — some tiny, some enormous, no
+    of how it started, and do the resulting avalanches have no characteristic size &mdash; some tiny, some enormous, no
     typical one in between?
   </p>
 
   <div class="layout">
     <div class="slide-card">
-      <p class="slide-caption">Live specimen · 36×36 · open boundary</p>
+      <p class="slide-caption">Live specimen &middot; 36&times;36 &middot; open boundary</p>
       <canvas id="canvas" width="396" height="396" role="img" aria-label="Sandpile grid"></canvas>
       <canvas id="spark" width="380" height="60"></canvas>
       <p class="status-line" id="statusLine">Ready.</p>
@@ -93,16 +101,10 @@
       <p class="sub" id="totalLine">0 runs logged this session</p>
 
       <div class="stat-grid">
-        <div class="stat-box">
-          <div class="stat-label">Avg height</div>
-          <div class="stat-value" id="heightVal">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">This avalanche</div>
-          <div class="stat-value" id="avalVal">—</div>
-        </div>
+        <div class="stat-box"><div class="stat-label">Avg height</div><div class="stat-value" id="heightVal">&mdash;</div></div>
+        <div class="stat-box"><div class="stat-label">This avalanche</div><div class="stat-value" id="avalVal">&mdash;</div></div>
       </div>
-      <p class="current-read" id="currentRead">Watching whether average height climbs and plateaus on its own — that plateau, if it happens, is the "self-organized" part.</p>
+      <p class="current-read" id="currentRead">Watching whether average height climbs and plateaus on its own &mdash; that plateau, if it happens, is the "self-organized" part.</p>
 
       <div class="hist" id="histBlock"></div>
 
@@ -110,9 +112,11 @@
       <div class="log" id="log"></div>
     </div>
   </div>
-</div>
 
+  <a href="simulations.html" style="display:inline-block;margin-top:36px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;">&larr; All simulations</a>
+</div>
 <script>
+
 const N = 36;
 const CELL = 396/N;
 const THRESH = 4;
@@ -194,7 +198,7 @@ function drawGrid(){
       const g = grid[y*N+x];
       if(g<=0) continue;
       const op = [0,0.25,0.5,0.85][Math.min(g,3)];
-      ctx.fillStyle = `rgba(232,184,92,${op})`;
+      ctx.fillStyle = `rgba(127,174,138,${op})`;
       ctx.fillRect(x*CELL+0.3, y*CELL+0.3, CELL-0.6, CELL-0.6);
     }
   }
@@ -203,7 +207,7 @@ function drawGrid(){
 function drawSpark(history){
   sctx.fillStyle = '#0b0c12';
   sctx.fillRect(0,0,sparkCanvas.width, sparkCanvas.height);
-  sctx.strokeStyle = '#e8b85c';
+  sctx.strokeStyle = '#7fae8a';
   sctx.lineWidth = 1.5;
   const h = sparkCanvas.height, w = sparkCanvas.width;
   const hist = history.slice(-300);
@@ -233,9 +237,9 @@ function renderHist(bins, totalAval){
 function readText(recentAvg, priorAvg){
   if(priorAvg===null) return {t:'Warming up...', cls:'unresolved'};
   const delta = recentAvg - priorAvg;
-  if(Math.abs(delta) < 0.03) return {t:`Stabilized — fluctuating around ${recentAvg.toFixed(2)}, not trending.`, cls:'stable'};
-  if(delta > 0) return {t:`Still climbing — average height rising toward some ceiling.`, cls:'oscillate'};
-  return {t:`Draining — average height falling.`, cls:'oscillate'};
+  if(Math.abs(delta) < 0.03) return {t:`Stabilized \u2014 fluctuating around ${recentAvg.toFixed(2)}, not trending.`, cls:'stable'};
+  if(delta > 0) return {t:`Still climbing \u2014 average height rising toward some ceiling.`, cls:'oscillate'};
+  return {t:`Draining \u2014 average height falling.`, cls:'oscillate'};
 }
 
 function setControlsDisabled(d){ document.querySelectorAll('button').forEach(b=>b.disabled=d); }
@@ -248,7 +252,7 @@ function logRun(dropCount, finalHeight, sum, count, max, bins){
   const ratio = mean>0 ? (max/mean) : 0;
   const row = document.createElement('div');
   row.className = 'log-entry';
-  row.innerHTML = `<span class="n">#${logCount}</span>start <b>${startLabel}</b> — ${dropCount} drops — avg height ${finalHeight.toFixed(2)} — mean avalanche ${mean.toFixed(1)}, max ${max}, max/mean ${ratio.toFixed(0)}×`;
+  row.innerHTML = `<span class="n">#${logCount}</span>start <b>${startLabel}</b> \u2014 ${dropCount} drops \u2014 avg height ${finalHeight.toFixed(2)} \u2014 mean avalanche ${mean.toFixed(1)}, max ${max}, max/mean ${ratio.toFixed(0)}\u00d7`;
   logEl.prepend(row);
 }
 
@@ -309,10 +313,10 @@ async function runFast(){
   drawGrid();
   const h = avgHeight();
   heightVal.textContent = h.toFixed(2);
-  avalVal.textContent = '—';
+  avalVal.textContent = '\u2014';
   renderHist(bins, count);
   const mean = sum/count, ratio = max/mean;
-  currentRead.innerHTML = `<span class="tag stable">run read</span> Mean avalanche ${mean.toFixed(1)}, largest ${max} — ${ratio.toFixed(0)}× the mean.`;
+  currentRead.innerHTML = `<span class="tag stable">run read</span> Mean avalanche ${mean.toFixed(1)}, largest ${max} \u2014 ${ratio.toFixed(0)}\u00d7 the mean.`;
   logRun(FAST_DROPS, h, sum, count, max, bins);
   statusLine.textContent = 'Fast run complete.';
   running = false; setControlsDisabled(false);

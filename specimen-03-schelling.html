@@ -4,27 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Specimen 03 — Schelling's Segregation Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#12131b;
-    --surface:#191b26;
-    --surface-2:#20222f;
-    --border:#33364a;
-    --text:#d9d6c9;
-    --text-muted:#8b8fa3;
-    --text-faint:#5b5e72;
-    --amber:#e8b85c;
-    --amber-dim:#8a6a38;
-    --died:#a9694f;
-    --stable:#7fae8a;
-    --oscillate:#6fa0c9;
-    --unresolved:#a68bc9;
-    --font-serif: "Iowan Old Style","Palatino Linotype",Georgia,serif;
-    --font-mono: "SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
+    --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
+    --amber:#c48aa9; --amber-dim:#7a4f61;
+    --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
+    --font-serif: "Source Serif 4",Georgia,serif;
+    --font-mono: "IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;}
-  .page{max-width:1040px;margin:0 auto;}
+  body{margin:0;background:var(--bg);}
+  .page{color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;max-width:1040px;margin:0 auto;}
   .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
   h1{font-family:var(--font-serif);font-weight:400;font-size:32px;margin:0 0 14px;color:var(--text);}
   .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:660px;margin:0 0 36px;}
@@ -71,11 +64,17 @@
 </head>
 <body>
 <div class="page">
-  <a href="index.html" style="display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 18px;">&larr; Cabinet of Emergence</a>
-  <p class="eyebrow">Cabinet of emergence — specimen 03</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;flex-wrap:wrap;gap:10px;">
+    <a href="index.html" style="font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:18px;">
+      <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#4a4842;">Simulations</span>
+      <a href="Games/" style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
+    </div>
+  </div>
+  <p class="eyebrow">Cabinet of emergence &mdash; specimen 03</p>
   <h1>Schelling's segregation model</h1>
   <p class="intro">
-    Two types of agents on a grid, each wanting only some fraction of their neighbors to match their own type —
+    Two types of agents on a grid, each wanting only some fraction of their neighbors to match their own type &mdash;
     nobody wants a monoculture, nobody is racist by the standard reading, everybody would be content living in a
     genuinely mixed neighborhood. Anyone below their threshold moves to a random empty spot. That's the whole rule.
     <b>The question:</b> how mild does that preference have to be before the population still ends up sorted?
@@ -83,7 +82,7 @@
 
   <div class="layout">
     <div class="slide-card">
-      <p class="slide-caption">Live specimen · 40×40 · 85% occupied</p>
+      <p class="slide-caption">Live specimen &middot; 40&times;40 &middot; 85% occupied</p>
       <canvas id="canvas" width="400" height="400" role="img" aria-label="Schelling segregation grid"></canvas>
       <p class="status-line" id="statusLine">Ready.</p>
 
@@ -110,25 +109,21 @@
       <p class="sub" id="totalLine">0 batches logged this session</p>
 
       <div class="stat-grid">
-        <div class="stat-box">
-          <div class="stat-label">Segregation index</div>
-          <div class="stat-value" id="indexVal">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">% unsatisfied</div>
-          <div class="stat-value" id="unsatVal">—</div>
-        </div>
+        <div class="stat-box"><div class="stat-label">Segregation index</div><div class="stat-value" id="indexVal">&mdash;</div></div>
+        <div class="stat-box"><div class="stat-label">% unsatisfied</div><div class="stat-value" id="unsatVal">&mdash;</div></div>
       </div>
-      <p class="current-read" id="currentRead">Random baseline for a 50/50 population is an index around 0.50 — that's the number a batch needs to clear before "segregation" means anything.</p>
+      <p class="current-read" id="currentRead">Random baseline for a 50/50 population is an index around 0.50 &mdash; that's the number a batch needs to clear before "segregation" means anything.</p>
 
       <hr class="divider">
       <div class="log" id="log"></div>
       <button class="reset-link" id="btnReset">Clear journal</button>
     </div>
   </div>
-</div>
 
+  <a href="simulations.html" style="display:inline-block;margin-top:36px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;">&larr; All simulations</a>
+</div>
 <script>
+
 const N = 40;
 const OCCUPIED_FRAC = 0.85;
 const MAX_STEPS = 800;
@@ -236,18 +231,18 @@ function drawGrid(g){
     for(let x=0;x<N;x++){
       const t = g[y*N+x];
       if(t===EMPTY) continue;
-      ctx.fillStyle = t===A ? '#e8b85c' : '#6fa0c9';
+      ctx.fillStyle = t===A ? '#c48aa9' : '#6fa0c9';
       ctx.fillRect(x*CELL+0.5, y*CELL+0.5, CELL-1, CELL-1);
     }
   }
 }
 
 function readText(index, unsatPct){
-  if(index > 0.85) return {t:'Almost total segregation — nearly every neighbor matches.', cls:'died'};
-  if(index > 0.65) return {t:'Strong segregation — clear same-type neighborhoods formed.', cls:'unresolved'};
-  if(index > 0.55) return {t:'Mild segregation — more same-type neighbors than chance predicts.', cls:'oscillate'};
-  if(index >= 0.45) return {t:'Close to the random baseline (~0.50) — not meaningfully sorted.', cls:'stable'};
-  return {t:'Below random baseline — actively mixed.', cls:'stable'};
+  if(index > 0.85) return {t:'Almost total segregation \u2014 nearly every neighbor matches.', cls:'died'};
+  if(index > 0.65) return {t:'Strong segregation \u2014 clear same-type neighborhoods formed.', cls:'unresolved'};
+  if(index > 0.55) return {t:'Mild segregation \u2014 more same-type neighbors than chance predicts.', cls:'oscillate'};
+  if(index >= 0.45) return {t:'Close to the random baseline (~0.50) \u2014 not meaningfully sorted.', cls:'stable'};
+  return {t:'Below random baseline \u2014 actively mixed.', cls:'stable'};
 }
 
 function setControlsDisabled(d){
@@ -283,8 +278,8 @@ async function observeOne(){
   const finalIdx = segregationIndex(g);
   indexVal.textContent = finalIdx.toFixed(2);
   statusLine.textContent = unsatCount===0
-    ? `Converged at step ${step+1} — everyone satisfied.`
-    : `Stopped at cap (${MAX_STEPS} steps) — ${unsatCount} still unsatisfied.`;
+    ? `Converged at step ${step+1} \u2014 everyone satisfied.`
+    : `Stopped at cap (${MAX_STEPS} steps) \u2014 ${unsatCount} still unsatisfied.`;
   running = false; setControlsDisabled(false);
 }
 
@@ -314,7 +309,7 @@ async function runBatch(n){
   logCount++;
   const row = document.createElement('div');
   row.className = 'log-entry';
-  row.innerHTML = `<span class="n">#${logCount}</span>threshold <b>${threshold.toFixed(2)}</b> — n=${n} — avg index ${avgIdx.toFixed(2)} — avg steps ${avgSteps.toFixed(0)} — ${convergedCount}/${n} converged`;
+  row.innerHTML = `<span class="n">#${logCount}</span>threshold <b>${threshold.toFixed(2)}</b> \u2014 n=${n} \u2014 avg index ${avgIdx.toFixed(2)} \u2014 avg steps ${avgSteps.toFixed(0)} \u2014 ${convergedCount}/${n} converged`;
   logEl.prepend(row);
   indexVal.textContent = avgIdx.toFixed(2);
   const r = readText(avgIdx, 0);
@@ -335,8 +330,8 @@ document.getElementById('btnReset').addEventListener('click', ()=>{
   batchCount=0; logCount=0;
   totalLine.textContent = '0 batches logged this session';
   logEl.innerHTML = '';
-  indexVal.textContent='—'; unsatVal.textContent='—';
-  currentRead.textContent = 'Random baseline for a 50/50 population is an index around 0.50 — that\'s the number a batch needs to clear before "segregation" means anything.';
+  indexVal.textContent='\u2014'; unsatVal.textContent='\u2014';
+  currentRead.textContent = 'Random baseline for a 50/50 population is an index around 0.50 \u2014 that\'s the number a batch needs to clear before "segregation" means anything.';
   statusLine.textContent = 'Journal cleared.';
 });
 

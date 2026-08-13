@@ -4,18 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Specimen 06 — Traffic Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#12131b; --surface:#191b26; --surface-2:#20222f; --border:#33364a;
     --text:#d9d6c9; --text-muted:#8b8fa3; --text-faint:#5b5e72;
-    --amber:#e8b85c; --amber-dim:#8a6a38;
+    --amber:#7f8fc9; --amber-dim:#4a5478;
     --died:#a9694f; --stable:#7fae8a; --oscillate:#6fa0c9; --unresolved:#a68bc9;
-    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
-    --font-mono:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
+    --font-serif:"Source Serif 4",Georgia,serif;
+    --font-mono:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;}
-  .page{max-width:1040px;margin:0 auto;}
+  body{margin:0;background:var(--bg);}
+  .page{color:var(--text);font-family:var(--font-mono);padding:40px 20px 80px;max-width:1040px;margin:0 auto;}
   .eyebrow{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:0 0 10px;}
   h1{font-family:var(--font-serif);font-weight:400;font-size:32px;margin:0 0 14px;}
   .intro{font-size:13px;line-height:1.7;color:var(--text-muted);max-width:660px;margin:0 0 36px;}
@@ -61,19 +63,25 @@
 </head>
 <body>
 <div class="page">
-  <a href="index.html" style="display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 18px;">&larr; Cabinet of Emergence</a>
-  <p class="eyebrow">Cabinet of emergence — specimen 06</p>
-  <h1>Traffic flow — the Nagel-Schreckenberg model</h1>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 18px;flex-wrap:wrap;gap:10px;">
+    <a href="index.html" style="font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:18px;">
+      <span style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#4a4842;">Simulations</span>
+      <a href="Games/" style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
+    </div>
+  </div>
+  <p class="eyebrow">Cabinet of emergence &mdash; specimen 06</p>
+  <h1>Traffic flow &mdash; the Nagel-Schreckenberg model</h1>
   <p class="intro">
     One lane, a loop, no crashes, no lane changes, no bottleneck anywhere in the rule. Each car: speed up if the
     road's clear, slow down if you're closing in on the car ahead, and a small random chance of tapping the brakes
     for no reason at all. That's it. <b>The question:</b> as the road fills up, does traffic flow taper off
-    smoothly, or does it break the way Schelling's segregation and the sandpile did — fine, fine, fine, then a cliff?
+    smoothly, or does it break the way Schelling's segregation and the sandpile did &mdash; fine, fine, fine, then a cliff?
   </p>
 
   <div class="layout">
     <div class="slide-card">
-      <p class="slide-caption">Live specimen · 150-cell ring · v<sub>max</sub> 5</p>
+      <p class="slide-caption">Live specimen &middot; 150-cell ring &middot; v<sub>max</sub> 5</p>
       <canvas id="canvas" width="396" height="396" role="img" aria-label="Ring road traffic simulation"></canvas>
       <canvas id="spark" width="380" height="60"></canvas>
       <p class="status-line" id="statusLine">Ready.</p>
@@ -102,24 +110,20 @@
       <p class="sub" id="totalLine">0 measurements logged this session</p>
 
       <div class="stat-grid">
-        <div class="stat-box">
-          <div class="stat-label">Avg velocity</div>
-          <div class="stat-value" id="velVal">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Flow</div>
-          <div class="stat-value" id="flowVal">—</div>
-        </div>
+        <div class="stat-box"><div class="stat-label">Avg velocity</div><div class="stat-value" id="velVal">&mdash;</div></div>
+        <div class="stat-box"><div class="stat-label">Flow</div><div class="stat-value" id="flowVal">&mdash;</div></div>
       </div>
-      <p class="current-read" id="currentRead">Flow = density × average speed. Watching whether it rises, peaks, then falls off smoothly — or snaps.</p>
+      <p class="current-read" id="currentRead">Flow = density &times; average speed. Watching whether it rises, peaks, then falls off smoothly &mdash; or snaps.</p>
 
       <hr class="divider">
       <div class="log" id="log"></div>
     </div>
   </div>
-</div>
 
+  <a href="simulations.html" style="display:inline-block;margin-top:36px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;">&larr; All simulations</a>
+</div>
 <script>
+
 const L = 150;
 const VMAX = 5;
 const WARMUP = 300;
@@ -171,7 +175,7 @@ function stepCars(cars, p){
 
 function speedColor(v){
   const t = v/VMAX;
-  const r1=169,g1=105,b1=79, r2=232,g2=184,b2=92;
+  const r1=169,g1=105,b1=79, r2=127,g2=174,b2=138;
   const r = Math.round(r1+(r2-r1)*t), g=Math.round(g1+(g2-g1)*t), b=Math.round(b1+(b2-b1)*t);
   return `rgb(${r},${g},${b})`;
 }
@@ -193,7 +197,7 @@ function drawRoad(cars){
 function drawSpark(history){
   sctx.fillStyle = '#0b0c12';
   sctx.fillRect(0,0,sparkCanvas.width, sparkCanvas.height);
-  sctx.strokeStyle = '#e8b85c';
+  sctx.strokeStyle = '#7f8fc9';
   sctx.lineWidth = 1.5;
   const h = sparkCanvas.height, w = sparkCanvas.width;
   const hist = history.slice(-300);
@@ -208,10 +212,10 @@ function drawSpark(history){
 
 function readText(avgV){
   const frac = avgV/VMAX;
-  if(frac > 0.8) return {t:'Free flow — cars moving near top speed.', cls:'stable'};
+  if(frac > 0.8) return {t:'Free flow \u2014 cars moving near top speed.', cls:'stable'};
   if(frac > 0.5) return {t:'Some slowing, but traffic is still moving.', cls:'oscillate'};
-  if(frac > 0.2) return {t:'Stop-and-go — clusters forming and breaking up.', cls:'unresolved'};
-  return {t:'Jammed — most cars near a standstill.', cls:'died'};
+  if(frac > 0.2) return {t:'Stop-and-go \u2014 clusters forming and breaking up.', cls:'unresolved'};
+  return {t:'Jammed \u2014 most cars near a standstill.', cls:'died'};
 }
 
 function setControlsDisabled(d){ document.querySelectorAll('button').forEach(b=>b.disabled=d); }
@@ -268,7 +272,7 @@ async function runAndLog(){
   totalLine.textContent = `${runCount} measurement${runCount===1?'':'s'} logged this session`;
   const row = document.createElement('div');
   row.className = 'log-entry';
-  row.innerHTML = `<span class="n">#${logCount}</span>density <b>${density.toFixed(2)}</b>, p <b>${p.toFixed(2)}</b> — avg v ${avgV.toFixed(2)} — flow <b>${flow.toFixed(3)}</b>`;
+  row.innerHTML = `<span class="n">#${logCount}</span>density <b>${density.toFixed(2)}</b>, p <b>${p.toFixed(2)}</b> \u2014 avg v ${avgV.toFixed(2)} \u2014 flow <b>${flow.toFixed(3)}</b>`;
   logEl.prepend(row);
   statusLine.textContent = 'Logged.';
   running = false; setControlsDisabled(false);
