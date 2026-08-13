@@ -4,44 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PARRY — Arcade Cabinet 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#1a1210; --bezel:#2b1620; --screen:#0d0806;
     --text:#e8dfd6; --text-muted:#a89890; --text-faint:#6e5f58;
-    --gold:#f0b429; --red:#e0483e; --cyan:#5ad1e6;
-    --font-display:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
-    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+    --gold:#4fae72; --red:#e0483e; --cyan:#5ad1e6;
+    --font-display:"IBM Plex Mono","SFMono-Regular",Menlo,Consolas,monospace;
+    --font-serif:"Space Grotesk",sans-serif;
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);padding:36px 20px 70px;display:flex;flex-direction:column;align-items:center;}
+  body{margin:0;background:var(--bg);}
+  .gamepage{color:var(--text);font-family:var(--font-display);padding:36px 20px 70px;display:flex;flex-direction:column;align-items:center;min-height:100vh;}
   .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;}
-  h1{font-family:var(--font-serif);font-weight:400;font-size:26px;margin:0 0 6px;letter-spacing:0.02em;}
+  h1{font-family:var(--font-serif);font-weight:700;font-size:28px;margin:0 0 6px;letter-spacing:0.01em;}
   .tagline{font-size:12.5px;color:var(--text-muted);margin:0 0 26px;max-width:420px;text-align:center;line-height:1.6;}
-  .cabinet{ background:var(--bezel); border-radius:16px; padding:16px 16px 20px; box-shadow:inset 0 0 0 1px rgba(240,180,41,0.15); }
-  .hud{ display:flex; justify-content:space-between; gap:14px; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0 4px 10px; }
-  .hud b{ color:var(--gold); font-size:15px; letter-spacing:0.02em; }
-  .lives{ display:flex; gap:4px; align-items:center; }
-  .pip{ width:9px; height:9px; border-radius:50%; background:var(--gold); }
-  .pip.lost{ background:var(--text-faint); }
-  .screen-wrap{ position:relative; border-radius:6px; overflow:hidden; }
-  canvas{ display:block; background:var(--screen); }
-  .scanlines{ position:absolute; inset:0; pointer-events:none;
-    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px); }
-  .overlay{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:rgba(13,8,6,0.86); gap:10px; padding:20px; }
-  .overlay.hidden{ display:none; }
-  .overlay .big{ font-family:var(--font-serif); font-size:22px; color:var(--gold); }
-  .overlay .stat{ font-size:12.5px; color:var(--text-muted); }
-  .overlay .stat b{ color:var(--text); }
-  .overlay .hint{ font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-top:8px; }
-  .controls-note{ margin-top:16px; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; }
+  .cabinet{background:var(--bezel);border-radius:16px;padding:16px 16px 20px;box-shadow:inset 0 0 0 1px rgba(79,174,114,0.18);}
+  .hud{display:flex;justify-content:space-between;gap:14px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);padding:0 4px 10px;}
+  .hud b{color:var(--gold);font-size:15px;letter-spacing:0.02em;}
+  .lives{display:flex;gap:4px;align-items:center;}
+  .pip{width:9px;height:9px;border-radius:50%;background:var(--gold);}
+  .pip.lost{background:var(--text-faint);}
+  .screen-wrap{position:relative;border-radius:6px;overflow:hidden;}
+  canvas{display:block;background:var(--screen);}
+  .scanlines{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(255,255,255,0.025) 0px,rgba(255,255,255,0.025) 1px,transparent 1px,transparent 3px);}
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(13,8,6,0.86);gap:10px;padding:20px;}
+  .overlay.hidden{display:none;}
+  .overlay .big{font-family:var(--font-serif);font-weight:700;font-size:22px;color:var(--gold);}
+  .overlay .stat{font-size:12.5px;color:var(--text-muted);}
+  .overlay .stat b{color:var(--text);}
+  .overlay .hint{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;margin-top:8px;}
+  .controls-note{margin-top:16px;font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.06em;}
 </style>
 </head>
 <body>
-  <a href="index.html" style="display:inline-block;font-family:var(--font-display);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 12px;">&larr; The Arcade Cabinet</a>
-  <p class="eyebrow">The Arcade Cabinet — game 03</p>
+<div class="gamepage">
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;max-width:760px;margin:0 0 24px;flex-wrap:wrap;gap:10px;">
+    <a href="../index.html" style="font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:18px;">
+      <a href="../simulations.html" style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#c4b892;text-decoration:none;">Simulations</a>
+      <a href="index.html" style="font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:#7fc9d9;text-decoration:none;">Games</a>
+    </div>
+  </div>
+  <p class="eyebrow">The Arcade Cabinet &mdash; game 03</p>
   <h1>PARRY</h1>
-  <p class="tagline">The ring closes in. Hit it right as it meets the mark. Too early, too late,
-    or not at all — that's a miss. Three misses and you're done.</p>
+  <p class="tagline">The ring closes in. Hit it right as it meets the mark. Too early, too late, or not at all &mdash; that's a miss. Three misses and you're done.</p>
 
   <div class="cabinet">
     <div class="hud">
@@ -61,7 +69,10 @@
   </div>
   <p class="controls-note">SPACE or click to parry</p>
 
+  <a href="index.html" style="margin-top:28px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;">&larr; All games</a>
+</div>
 <script>
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const W = 400, H = 400;
@@ -78,7 +89,7 @@ const START_R = 180;
 const AUTO_MISS_R = 30;
 const START_LIVES = 3;
 
-let state = 'ready'; // ready | playing | over
+let state = 'ready';
 let score, combo, lives, best = 0;
 let elapsedGame, ringDuration, ringElapsed, ringResolved, radius;
 let resolveTimer, resolveText, resolveColor;
@@ -108,7 +119,7 @@ function resolve(kind){
     const mult = 1 + Math.floor(combo/5)*0.5;
     score += Math.round((kind==='perfect'?100:50)*mult);
     resolveText = kind==='perfect' ? 'PERFECT' : 'GOOD';
-    resolveColor = kind==='perfect' ? '#f0b429' : '#5ad1e6';
+    resolveColor = kind==='perfect' ? '#4fae72' : '#5ad1e6';
   } else {
     combo = 0;
     lives--;
@@ -152,7 +163,7 @@ function draw(){
   ctx.fillStyle = '#0d0806';
   ctx.fillRect(0,0,W,H);
 
-  ctx.strokeStyle = 'rgba(240,180,41,0.6)';
+  ctx.strokeStyle = 'rgba(79,174,114,0.6)';
   ctx.setLineDash([4,4]);
   ctx.lineWidth = 2;
   ctx.beginPath(); ctx.arc(CX,CY,TARGET_R,0,Math.PI*2); ctx.stroke();

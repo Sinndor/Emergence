@@ -4,125 +4,85 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Arcade Cabinet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#1a1210; --bezel:#2b1620; --screen:#0d0806;
-    --text:#e8dfd6; --text-muted:#a89890; --text-faint:#6e5f58;
-    --gold:#f0b429; --red:#e0483e; --cyan:#5ad1e6;
-    --font-display:"SFMono-Regular",Menlo,"IBM Plex Mono",Consolas,monospace;
-    --font-serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
-  }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);padding:60px 20px 100px;}
-  .page{max-width:760px;margin:0 auto;}
-  .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin:0 0 14px;}
-  h1{font-family:var(--font-serif);font-weight:400;font-size:42px;margin:0 0 18px;line-height:1.15;}
-  .lede{font-size:14px;line-height:1.8;color:var(--text-muted);max-width:600px;margin:0 0 60px;}
-  .lede b{color:var(--text);font-weight:600;}
-  .game{
-    background:var(--bezel);
-    border-radius:8px;
-    padding:26px 28px;
-    margin-bottom:22px;
-    box-shadow:inset 0 0 0 1px rgba(240,180,41,0.12);
-  }
-  .game-num{font-size:11px;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin:0 0 6px;}
-  .game-title{font-family:var(--font-serif);font-size:24px;margin:0 0 10px;color:var(--gold);}
-  .game-desc{font-size:13px;line-height:1.7;color:var(--text-muted);margin:0 0 18px;}
-  .game-link{
-    display:inline-block;
-    font-family:var(--font-display);
-    font-size:11px;
-    letter-spacing:0.05em;
-    text-transform:uppercase;
-    color:var(--cyan);
-    text-decoration:none;
-    border:1px solid rgba(90,209,230,0.4);
-    padding:9px 14px;
-    border-radius:3px;
-  }
-  .game-link:hover{background:rgba(90,209,230,0.08);}
-  footer{
-    margin-top:50px;
-    font-size:11.5px;
-    color:var(--text-faint);
-    line-height:1.8;
-    border-top:1px solid var(--bezel);
-    padding-top:24px;
-  }
+  body{margin:0;background:#0d0d10;}
+  a{color:oklch(72% 0.15 195);}
+  a:hover{color:oklch(80% 0.17 195);}
 </style>
 </head>
 <body>
-<div class="page">
-  <a href="../index.html" style="display:inline-block;font-family:var(--font-display);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);text-decoration:none;margin:0 0 18px;">&larr; Cabinet of Emergence</a>
-  <p class="eyebrow">A companion project</p>
-  <h1>The Arcade Cabinet</h1>
-  <p class="lede">
-    One small, complete game per wake, built the same way as <b>Cabinet of Emergence</b> next door — one
-    session, one working thing, nothing left half-finished. Six so far, each testing a different kind of
-    pressure: reflex, decision, timing, memory, attention, and logic.
-  </p>
+<div style="min-height:100vh;background:#0d0d10;color:#eae7df;font-family:'IBM Plex Mono',monospace;">
 
-  <div class="game">
-    <p class="game-num">Game 01</p>
-    <h2 class="game-title">ONE HIT</h2>
-    <p class="game-desc">One life. Dodge the streaks — difficulty ramps the longer you survive. Near-misses
-      get tracked, because cutting it close is the actual point.</p>
-    <a class="game-link" href="game-01-one-hit.html">Play →</a>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:22px 32px;max-width:1120px;margin:0 auto;flex-wrap:wrap;gap:12px;">
+    <a href="../index.html" style="font-size:12px;letter-spacing:0.12em;color:#6f6b60;text-transform:uppercase;text-decoration:none;">&larr; Sinndor + Claude</a>
+    <div style="display:flex;gap:24px;">
+      <a href="../simulations.html" style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#c4b892;text-decoration:none;">Simulations</a>
+      <span style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#4a4842;">Games</span>
+    </div>
   </div>
 
-  <div class="game">
-    <p class="game-num">Game 02</p>
-    <h2 class="game-title">GREED RUN</h2>
-    <p class="game-desc">Collect orbs while something wakes up and starts hunting you. Bank your score by
-      making it back to the ring before it catches you — or lose it all trying for one more.</p>
-    <a class="game-link" href="game-02-greed-run.html">Play →</a>
+  <div style="max-width:760px;margin:0 auto;padding:72px 32px 56px;">
+    <p style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(72% 0.15 195);margin:0 0 18px;">Games</p>
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:44px;line-height:1.1;margin:0 0 20px;color:#f3f0e6;letter-spacing:-0.01em;">The Arcade Cabinet</h1>
+    <p style="font-size:14.5px;line-height:1.75;color:#a8a396;margin:0;max-width:560px;">
+      Small games, one built per session. Each one tests a different kind of pressure — reflex, decisions,
+      timing, memory, attention, logic.
+    </p>
   </div>
 
-  <div class="game">
-    <p class="game-num">Game 03</p>
-    <h2 class="game-title">PARRY</h2>
-    <p class="game-desc">One button, one closing ring. Hit it right as it meets the mark — too early, too
-      late, or not at all, and that's a miss. Three misses ends the run.</p>
-    <a class="game-link" href="game-03-parry.html">Play →</a>
+  <div style="max-width:1120px;margin:0 auto;padding:0 32px 100px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;">
+
+    <a href="game-01-one-hit.html" style="display:flex;flex-direction:column;padding:28px 26px;border-radius:10px;background:#15151a;border:1px solid oklch(35% 0.08 25);text-decoration:none;transition:transform .15s ease,border-color .15s ease;" style-hover="transform:translateY(-3px);border-color:oklch(60% 0.19 25);">
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:#f3f0e6;letter-spacing:0.01em;">ONE HIT</h2>
+      <p style="font-size:13px;line-height:1.65;color:#98938a;margin:0 0 20px;flex:1;">One life, one touch. The room gets busier every second you last.</p>
+      <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(68% 0.19 25);">Play &rarr;</span>
+    </a>
+
+    <a href="game-02-greed-run.html" style="display:flex;flex-direction:column;padding:28px 26px;border-radius:10px;background:#15151a;border:1px solid oklch(35% 0.08 70);text-decoration:none;transition:transform .15s ease,border-color .15s ease;" style-hover="transform:translateY(-3px);border-color:oklch(65% 0.19 70);">
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:#f3f0e6;letter-spacing:0.01em;">GREED RUN</h2>
+      <p style="font-size:13px;line-height:1.65;color:#98938a;margin:0 0 20px;flex:1;">Collect orbs. Something wakes up and hunts you. Bank your score before it's too late, or push for one more.</p>
+      <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(68% 0.19 70);">Play &rarr;</span>
+    </a>
+
+    <a href="game-03-parry.html" style="display:flex;flex-direction:column;padding:28px 26px;border-radius:10px;background:#15151a;border:1px solid oklch(35% 0.08 140);text-decoration:none;transition:transform .15s ease,border-color .15s ease;" style-hover="transform:translateY(-3px);border-color:oklch(65% 0.19 140);">
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:#f3f0e6;letter-spacing:0.01em;">PARRY</h2>
+      <p style="font-size:13px;line-height:1.65;color:#98938a;margin:0 0 20px;flex:1;">One button, one closing ring. Time it right or take a miss. Three misses ends the run.</p>
+      <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(68% 0.19 140);">Play &rarr;</span>
+    </a>
+
+    <a href="game-04-echo.html" style="display:flex;flex-direction:column;padding:28px 26px;border-radius:10px;background:#15151a;border:1px solid oklch(35% 0.08 265);text-decoration:none;transition:transform .15s ease,border-color .15s ease;" style-hover="transform:translateY(-3px);border-color:oklch(65% 0.19 265);">
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:#f3f0e6;letter-spacing:0.01em;">ECHO</h2>
+      <p style="font-size:13px;line-height:1.65;color:#98938a;margin:0 0 20px;flex:1;">Watch the sequence. Repeat it back. Every round adds a step and speeds up.</p>
+      <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(68% 0.19 265);">Play &rarr;</span>
+    </a>
+
+    <a href="game-05-spark.html" style="display:flex;flex-direction:column;padding:28px 26px;border-radius:10px;background:#15151a;border:1px solid oklch(35% 0.08 330);text-decoration:none;transition:transform .15s ease,border-color .15s ease;" style-hover="transform:translateY(-3px);border-color:oklch(65% 0.19 330);">
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:#f3f0e6;letter-spacing:0.01em;">SPARK</h2>
+      <p style="font-size:13px;line-height:1.65;color:#98938a;margin:0 0 20px;flex:1;">Tap gold before it fades. Red costs you a life just the same. Gets faster, more decoys.</p>
+      <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(68% 0.19 330);">Play &rarr;</span>
+    </a>
+
+    <a href="game-06-blackout.html" style="display:flex;flex-direction:column;padding:28px 26px;border-radius:10px;background:#15151a;border:1px solid oklch(35% 0.08 195);text-decoration:none;transition:transform .15s ease,border-color .15s ease;" style-hover="transform:translateY(-3px);border-color:oklch(65% 0.19 195);">
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;color:#f3f0e6;letter-spacing:0.01em;">BLACKOUT</h2>
+      <p style="font-size:13px;line-height:1.65;color:#98938a;margin:0 0 20px;flex:1;">Tap a tile, it and its neighbors flip. No timer. Turn every light off in as few moves as you can.</p>
+      <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(68% 0.19 195);">Play &rarr;</span>
+    </a>
+
   </div>
 
-  <div class="game">
-    <p class="game-num">Game 04</p>
-    <h2 class="game-title">ECHO</h2>
-    <p class="game-desc">Watch the sequence, repeat it back in order. Every round adds one more step and
-      plays it back a little faster. One wrong pad ends the run.</p>
-    <a class="game-link" href="game-04-echo.html">Play →</a>
+  <div style="max-width:1120px;margin:0 auto;padding:0 32px 80px;border-top:1px solid #24242a;padding-top:40px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;">
+    <p style="font-size:12.5px;line-height:1.8;color:#6f6b60;max-width:440px;margin:0;">
+      Built one wake at a time, published when it was actually ready.
+    </p>
+    <a href="https://ko-fi.com/sinndor" target="_blank" style="display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:#0d0d10;background:oklch(72% 0.15 195);padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:600;">Support this project</a>
   </div>
 
-  <div class="game">
-    <p class="game-num">Game 05</p>
-    <h2 class="game-title">SPARK</h2>
-    <p class="game-desc">Tap the gold tile before it fades. Red is a decoy — tap that and you lose a life
-      just the same. Gets faster, and the decoys get more frequent.</p>
-    <a class="game-link" href="game-05-spark.html">Play →</a>
-  </div>
-
-  <div class="game">
-    <p class="game-num">Game 06</p>
-    <h2 class="game-title">BLACKOUT</h2>
-    <p class="game-desc">Tap a tile — it and its neighbors flip. No timer, no pressure. Turn every light
-      off in as few moves as you can.</p>
-    <a class="game-link" href="game-06-blackout.html">Play →</a>
-  </div>
-
-  <footer>
-    Built one wake at a time, Sinndor and Claude, one game per session, published when it was actually ready.
-  </footer>
 </div>
-<script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
 <script>
-  kofiWidgetOverlay.draw('sinndor', {
-    'type': 'floating-chat',
-    'floating-chat.donateButton.text': 'Support me',
-    'floating-chat.donateButton.background-color': '#00b9fe',
-    'floating-chat.donateButton.text-color': '#fff'
-  });
+
 </script>
 </body>
 </html>
