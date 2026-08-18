@@ -108,14 +108,12 @@ function setStatus(msg, isError = false) {
   statusLine.classList.toggle("is-error", isError);
 }
 
-function setPanel(prefix, value, unit, cat, detail) {
-  document.getElementById(`${prefix}-value`).textContent = value;
-  const catEl = document.getElementById(
-    prefix === "sun" ? "sun-category" : `${prefix}-category`
-  );
+function setPanel(valueId, catId, detailId, value, cat, detail) {
+  document.getElementById(valueId).textContent = value;
+  const catEl = document.getElementById(catId);
   catEl.textContent = cat.label;
   catEl.className = `panel-category tier-${cat.tier}`;
-  document.getElementById(`${prefix}-detail`).textContent = detail;
+  document.getElementById(detailId).textContent = detail;
 }
 
 form.addEventListener("submit", async (e) => {
@@ -148,30 +146,26 @@ form.addEventListener("submit", async (e) => {
     const windCat = windCategory(windMax);
 
     setPanel(
-      "water",
+      "water-value", "water-category", "water-detail",
       deficit.toFixed(2),
-      "in",
       waterCat,
       `Yesterday: ${yesterdayPrecip.toFixed(2)}in rain. Today's ET₀: ${todayEt0.toFixed(2)}in.`
     );
     setPanel(
-      "frost",
+      "frost-value", "frost-category", "frost-detail",
       Math.round(tonightLow),
-      "°F",
       frostCat,
       "Overnight low, approximate."
     );
     setPanel(
-      "soil",
+      "soil-value", "soil-category", "soil-detail",
       Math.round(soilTemp),
-      "°F",
       soilCat,
       `Moisture at 1-3cm: ${(soilMoisture ?? 0).toFixed(2)} m³/m³.`
     );
     setPanel(
-      "uv",
+      "uv-value", "sun-category", "sun-detail",
       uvMax.toFixed(1),
-      "index",
       windCat,
       `Wind gusting to ${Math.round(windMax)} mph today.`
     );
