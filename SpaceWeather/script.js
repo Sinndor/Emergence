@@ -58,10 +58,8 @@ async function getKpIndex() {
   const res = await fetch("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json");
   if (!res.ok) throw new Error("NOAA space weather data unavailable right now.");
   const rows = await res.json();
-  const header = rows[0];
-  const kpIdx = header.findIndex((h) => h.toLowerCase().includes("kp"));
   const last = rows[rows.length - 1];
-  return parseFloat(last[kpIdx >= 0 ? kpIdx : 1]);
+  return parseFloat(last.Kp);
 }
 
 async function getCloudCover(lat, lon) {
