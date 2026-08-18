@@ -1,32 +1,3 @@
-// Kp index -> approximate lowest latitude the aurora becomes visible at.
-// This uses the searched location's geographic latitude as a stand-in for
-// magnetic latitude, which is a simplification (fine for most of the US,
-// less accurate near the poles or far east/west). Good enough for a v1
-// go/no-go call; a real aurora-oval overlay on a map is the natural
-// next step once we add the map view.
-const KP_TO_LATITUDE = {
-  0: 66.5, 1: 64.5, 2: 62.4, 3: 60.4, 4: 58.3,
-  5: 56.3, 6: 54.2, 7: 52.2, 8: 50.1, 9: 48.1,
-};
-
-const form = document.getElementById("query-form");
-const placeInput = document.getElementById("place");
-const submitBtn = document.getElementById("submit-btn");
-const statusLine = document.getElementById("status-line");
-const panels = document.getElementById("panels");
-const verdict = document.getElementById("verdict");
-const verdictText = document.getElementById("verdict-text");
-const updatedAt = document.getElementById("updated-at");
-
-function setAmbient(hue) {
-  document.documentElement.style.setProperty("--current-hue", hue);
-}
-
-function setStatus(msg, isError = false) {
-  statusLine.textContent = msg;
-  statusLine.classList.toggle("is-error", isError);
-}
-
 async function resolveLocation(query) {
   if (/^\d{5}$/.test(query)) {
     const res = await fetch(`https://api.zippopotam.us/us/${query}`);
@@ -54,67 +25,97 @@ async function resolveLocation(query) {
   };
 }
 
-async function getKpIndex() {
-  const res = await fetch("https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json");
-  if (!res.ok) throw new Error("NOAA space weather data unavailable right now.");
-  const rows = await res.json();
-  const last = rows[rows.length - 1];
-  return parseFloat(last.Kp);
+async function getGardenData(lat, lon) {
+  const params = new URLSearchParams({
+    latitude: lat,
+    longitude: lon,
+    daily: "precipitation_sum,et0_fao_evapotranspiration,temperature_2m_min,uv_index_max,wind_speed_10m_max",
+    hourly: "soil_temperature_6cm,soil_moisture_1_to_3cm",
+    past_days: "1",
+    forecast_days: "2",
+    temperature_unit: "fahrenheit",
+    wind_speed_unit: "mph",
+    precipitation_unit: "inch",
+    timezone: "auto",
+  });
+  const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
+  if (!res.ok) throw new Error("Weather data unavailable right now.");
+  return res.json();
 }
 
-async function getCloudCover(lat, lon) {
-  const res = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=cloud_cover&forecast_days=2&timezone=auto`
-  );
-  if (!res.ok) throw new Error("Weather forecast unavailable right now.");
-  const data = await res.json();
-  const times = data.hourly.time;
-  const clouds = data.hourly.cloud_cover;
-
-  // "tonight" = 8pm through 4am local time, whichever falls soonest
-  const tonightValues = times
-    .map((t, i) => ({ hour: new Date(t).getHours(), value: clouds[i] }))
-    .filter(({ hour }) => hour >= 20 || hour <= 4)
-    .slice(0, 8)
-    .map((x) => x.value);
-
-  if (tonightValues.length === 0) return null;
-  return Math.round(tonightValues.reduce((a, b) => a + b, 0) / tonightValues.length);
+function nearestHourlyIndex(times) {
+  const now = Date.now();
+  let bestIdx = 0;
+  let bestDiff = Infinity;
+  times.forEach((t, i) => {
+    const diff = Math.abs(new Date(t).getTime() - now);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      bestIdx = i;
+    }
+  });
+  return bestIdx;
 }
 
-function kpCategory(kp) {
-  if (kp < 4) return { label: "Quiet", tier: "unlikely" };
-  if (kp < 5) return { label: "Unsettled", tier: "unlikely" };
-  if (kp < 6) return { label: "Active", tier: "possible" };
-  if (kp < 7) return { label: "Minor storm", tier: "likely" };
-  return { label: "Major storm", tier: "excellent" };
+function waterCategory(deficitIn) {
+  if (deficitIn <= 0.05) return { tier: "good", label: "No watering needed" };
+  if (deficitIn <= 0.2) return { tier: "caution", label: "Light watering helps" };
+  return { tier: "action", label: "Water today" };
 }
 
-function cloudCategory(pct) {
-  if (pct <= 25) return { label: "Clear", tier: "excellent" };
-  if (pct <= 50) return { label: "Partly cloudy", tier: "likely" };
-  if (pct <= 75) return { label: "Mostly cloudy", tier: "possible" };
-  return { label: "Overcast", tier: "unlikely" };
+function frostCategory(lowF) {
+  if (lowF <= 28) return { tier: "action", label: "Hard freeze" };
+  if (lowF <= 36) return { tier: "caution", label: "Frost possible" };
+  return { tier: "good", label: "No frost risk" };
+}
+
+function soilCategory(tempF) {
+  if (tempF < 50) return { tier: "action", label: "Too cold to plant" };
+  if (tempF < 60) return { tier: "caution", label: "Cool-season only" };
+  return { tier: "good", label: "Warm enough" };
+}
+
+function windCategory(maxMph) {
+  if (maxMph >= 20) return { tier: "caution", label: "Stake tender plants" };
+  return { tier: "good", label: "Calm enough" };
 }
 
 function tierHue(tier) {
-  return { unlikely: 205, possible: 150, likely: 155, excellent: 130 }[tier] ?? 200;
+  return { good: 95, caution: 42, action: 14 }[tier] ?? 95;
 }
 
-function buildVerdict(kp, lat, cloudPct) {
-  const thresholdLat = KP_TO_LATITUDE[Math.min(9, Math.floor(kp))] ?? 66.5;
-  const geomagneticallyInRange = lat >= thresholdLat - 3; // small buffer
+function worstTier(tiers) {
+  if (tiers.includes("action")) return "action";
+  if (tiers.includes("caution")) return "caution";
+  return "good";
+}
 
-  if (cloudPct != null && cloudPct > 75) {
-    return "Skies are too overcast to see much of anything tonight, regardless of activity.";
-  }
-  if (!geomagneticallyInRange) {
-    return `Kp ${kp} isn't strong enough to push the aurora down to your latitude tonight -- this one's more likely visible further north.`;
-  }
-  if (cloudPct != null && cloudPct > 50) {
-    return `Geomagnetic activity is in range for your latitude, but partial cloud cover may block the view. Worth a look if it clears.`;
-  }
-  return `Good conditions -- active geomagnetic activity in range for your latitude, with clear-enough skies. Worth stepping outside after dark, away from city lights.`;
+const form = document.getElementById("query-form");
+const placeInput = document.getElementById("place");
+const submitBtn = document.getElementById("submit-btn");
+const statusLine = document.getElementById("status-line");
+const panels = document.getElementById("panels");
+const verdict = document.getElementById("verdict");
+const verdictList = document.getElementById("verdict-list");
+const updatedAt = document.getElementById("updated-at");
+
+function setAmbient(hue) {
+  document.documentElement.style.setProperty("--current-hue", hue);
+}
+
+function setStatus(msg, isError = false) {
+  statusLine.textContent = msg;
+  statusLine.classList.toggle("is-error", isError);
+}
+
+function setPanel(prefix, value, unit, cat, detail) {
+  document.getElementById(`${prefix}-value`).textContent = value;
+  const catEl = document.getElementById(
+    prefix === "sun" ? "sun-category" : `${prefix}-category`
+  );
+  catEl.textContent = cat.label;
+  catEl.className = `panel-category tier-${cat.tier}`;
+  document.getElementById(`${prefix}-detail`).textContent = detail;
 }
 
 form.addEventListener("submit", async (e) => {
@@ -127,28 +128,85 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const { lat, lon, label } = await resolveLocation(query);
-    const [kp, cloudPct] = await Promise.all([getKpIndex(), getCloudCover(lat, lon)]);
+    const data = await getGardenData(lat, lon);
 
-    const kpCat = kpCategory(kp);
-    const cloudCat = cloudCategory(cloudPct ?? 100);
+    const yesterdayPrecip = data.daily.precipitation_sum[0] ?? 0;
+    const todayEt0 = data.daily.et0_fao_evapotranspiration[1] ?? 0;
+    const deficit = Math.max(0, todayEt0 - yesterdayPrecip);
+    const waterCat = waterCategory(deficit);
 
-    document.getElementById("kp-value").textContent = kp.toFixed(1);
-    document.getElementById("kp-category").textContent = kpCat.label;
-    document.getElementById("kp-category").className = `panel-category tier-${kpCat.tier}`;
-    document.getElementById("kp-detail").textContent =
-      "Higher Kp pushes the aurora oval further from the poles.";
+    const tonightLow = data.daily.temperature_2m_min[2] ?? data.daily.temperature_2m_min[1];
+    const frostCat = frostCategory(tonightLow);
 
-    document.getElementById("cloud-value").textContent = cloudPct != null ? cloudPct : "--";
-    document.getElementById("cloud-category").textContent = cloudCat.label;
-    document.getElementById("cloud-category").className = `panel-category tier-${cloudCat.tier}`;
-    document.getElementById("cloud-detail").textContent = "Average forecast, tonight's viewing window.";
+    const hIdx = nearestHourlyIndex(data.hourly.time);
+    const soilTemp = data.hourly.soil_temperature_6cm[hIdx];
+    const soilMoisture = data.hourly.soil_moisture_1_to_3cm[hIdx];
+    const soilCat = soilCategory(soilTemp);
 
-    verdictText.textContent = buildVerdict(kp, lat, cloudPct);
+    const uvMax = data.daily.uv_index_max[1];
+    const windMax = data.daily.wind_speed_10m_max[1];
+    const windCat = windCategory(windMax);
+
+    setPanel(
+      "water",
+      deficit.toFixed(2),
+      "in",
+      waterCat,
+      `Yesterday: ${yesterdayPrecip.toFixed(2)}in rain. Today's ET₀: ${todayEt0.toFixed(2)}in.`
+    );
+    setPanel(
+      "frost",
+      Math.round(tonightLow),
+      "°F",
+      frostCat,
+      "Overnight low, approximate."
+    );
+    setPanel(
+      "soil",
+      Math.round(soilTemp),
+      "°F",
+      soilCat,
+      `Moisture at 1-3cm: ${(soilMoisture ?? 0).toFixed(2)} m³/m³.`
+    );
+    setPanel(
+      "uv",
+      uvMax.toFixed(1),
+      "index",
+      windCat,
+      `Wind gusting to ${Math.round(windMax)} mph today.`
+    );
+
+    const actions = [];
+    if (waterCat.tier !== "good") {
+      actions.push(`Water today — about ${deficit.toFixed(2)}in needed to keep up with evapotranspiration.`);
+    }
+    if (frostCat.tier === "action") {
+      actions.push(`Hard freeze tonight (${Math.round(tonightLow)}°F) — bring in or cover tender plants.`);
+    } else if (frostCat.tier === "caution") {
+      actions.push(`Frost possible tonight (${Math.round(tonightLow)}°F) — protect anything tender.`);
+    }
+    if (soilCat.tier === "action") {
+      actions.push(`Soil's only ${Math.round(soilTemp)}°F — hold off on warm-season planting.`);
+    } else if (soilCat.tier === "caution") {
+      actions.push(`Soil's ${Math.round(soilTemp)}°F — fine for cool-season crops, still cool for warm-season.`);
+    }
+    if (windCat.tier === "caution") {
+      actions.push(`Wind gusting to ${Math.round(windMax)} mph — stake or hold off on spraying.`);
+    }
+    if (actions.length === 0) {
+      actions.push("Conditions are steady — no action needed today.");
+    }
+
+    verdictList.innerHTML = "";
+    actions.forEach((a) => {
+      const li = document.createElement("li");
+      li.textContent = a;
+      verdictList.appendChild(li);
+    });
+
     verdict.hidden = false;
     panels.hidden = false;
-
-    const worseTier = [kpCat.tier, cloudCat.tier].includes("unlikely") ? "unlikely" : kpCat.tier;
-    setAmbient(tierHue(worseTier));
+    setAmbient(tierHue(worstTier([waterCat.tier, frostCat.tier, soilCat.tier, windCat.tier])));
 
     setStatus(`Showing ${label}.`);
     updatedAt.textContent = `Updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;

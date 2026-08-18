@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Aurora Watch</title>
+<title>Garden Watch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -16,51 +16,71 @@
     <header class="top">
       <div class="mark">
         <span class="mark-dot" id="mark-dot"></span>
-        <span class="mark-text">AURORA WATCH</span>
+        <span class="mark-text">GARDEN WATCH</span>
       </div>
-      <p class="tagline">Geomagnetic activity and your local sky, read together — can you actually see it tonight?</p>
+      <p class="tagline">Watering, frost, and soil, read together — what does the garden actually need today?</p>
     </header>
 
     <form class="query" id="query-form">
       <label class="query-label" for="place">WHERE</label>
       <input class="query-input" id="place" name="place"
              placeholder="Zip code or city name" autocomplete="off" required />
-      <button class="query-submit" type="submit" id="submit-btn">Check tonight</button>
+      <button class="query-submit" type="submit" id="submit-btn">Check garden</button>
     </form>
 
     <div class="status-line" id="status-line" aria-live="polite"></div>
 
     <main class="panels" id="panels" hidden>
-      <section class="panel" id="panel-geo" data-panel="geo">
-        <div class="panel-eyebrow">SUN &amp; MAGNETOSPHERE</div>
+      <section class="panel" id="panel-water" data-panel="water">
+        <div class="panel-eyebrow">WATERING</div>
         <div class="panel-main">
-          <div class="reading" id="kp-value">—</div>
-          <div class="reading-unit">KP INDEX</div>
+          <div class="reading" id="water-value">—</div>
+          <div class="reading-unit">IN NEEDED</div>
         </div>
-        <div class="panel-category" id="kp-category">—</div>
-        <div class="panel-detail" id="kp-detail">—</div>
+        <div class="panel-category" id="water-category">—</div>
+        <div class="panel-detail" id="water-detail">—</div>
       </section>
 
-      <section class="panel" id="panel-sky" data-panel="sky">
-        <div class="panel-eyebrow">YOUR SKY TONIGHT</div>
+      <section class="panel" id="panel-frost" data-panel="frost">
+        <div class="panel-eyebrow">FROST RISK TONIGHT</div>
         <div class="panel-main">
-          <div class="reading" id="cloud-value">—</div>
-          <div class="reading-unit">% CLOUD COVER</div>
+          <div class="reading" id="frost-value">—</div>
+          <div class="reading-unit">°F LOW</div>
         </div>
-        <div class="panel-category" id="cloud-category">—</div>
-        <div class="panel-detail" id="cloud-detail">—</div>
+        <div class="panel-category" id="frost-category">—</div>
+        <div class="panel-detail" id="frost-detail">—</div>
+      </section>
+
+      <section class="panel" id="panel-soil" data-panel="soil">
+        <div class="panel-eyebrow">SOIL</div>
+        <div class="panel-main">
+          <div class="reading" id="soil-value">—</div>
+          <div class="reading-unit">°F AT 6CM</div>
+        </div>
+        <div class="panel-category" id="soil-category">—</div>
+        <div class="panel-detail" id="soil-detail">—</div>
+      </section>
+
+      <section class="panel" id="panel-sun" data-panel="sun">
+        <div class="panel-eyebrow">SUN &amp; WIND</div>
+        <div class="panel-main">
+          <div class="reading" id="uv-value">—</div>
+          <div class="reading-unit">UV MAX</div>
+        </div>
+        <div class="panel-category" id="sun-category">—</div>
+        <div class="panel-detail" id="sun-detail">—</div>
       </section>
     </main>
 
     <div class="verdict" id="verdict" hidden>
-      <div class="verdict-label">TONIGHT'S CALL</div>
-      <div class="verdict-text" id="verdict-text">—</div>
+      <div class="verdict-label">TODAY'S ACTIONS</div>
+      <ul class="verdict-list" id="verdict-list"></ul>
     </div>
 
     <footer class="foot">
       <span id="updated-at">Not checked yet</span>
       <span class="foot-sep">·</span>
-      <span>Data: NOAA Space Weather Prediction Center, Open-Meteo</span>
+      <span>Data: Open-Meteo, National Weather Service</span>
     </footer>
   </div>
 
